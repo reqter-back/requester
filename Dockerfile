@@ -1,4 +1,4 @@
-FROM node:alpine AS mivapp
+FROM node:alpine AS requester
 
 WORKDIR /app
 COPY . /app 
