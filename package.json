@@ -1,0 +1,24 @@
+{
+  "name": "requester",
+  "version": "1.0.0",
+  "description": "Requesters app gateway",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fakhrad/requester.git"
+  },
+  "keywords": [
+    "RFQ",
+    "Requester",
+    "Gateway"
+  ],
+  "author": "Fakhreddin Rezaei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fakhrad/requester/issues"
+  },
+  "homepage": "https://github.com/fakhrad/requester#readme"
+}

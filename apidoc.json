@@ -1,0 +1,9 @@
+{
+    "name": "Mivapp Api",
+    "version": "0.0.0",
+    "description": "Mivapp backend api",
+    "apidoc": {
+      "title": "Mivapp api",
+      "url" : "https://api.mivapp.ir/v1"
+    }
+  }
