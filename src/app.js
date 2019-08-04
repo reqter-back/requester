@@ -15,6 +15,7 @@ app.use(cors());
 
 // var customer = require('./routes/customers');
 var lists = require('./routes/lists');
+var auth = require('./routes/auth');
 // var quote = require('./routes/quotes');
 // var request = require('./routes/requests');
 // var partner = require('./routes/partners');
@@ -29,6 +30,7 @@ app.use(cookieParser());
 // app.use('/quotes', quote);
 // app.use('/requests', request);
 app.use('/api/v1/lists', lists);
+app.use('/api/v1/auth', auth);
 // app.use('/products', products);
 app.use('/docs', express.static('./apidoc'))
 module.exports = app;
