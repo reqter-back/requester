@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production node ./src/bin/www",
     "startdev": "node ./src/bin/www",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs" : "apidoc -i ./src/ -o apidoc/"
+    "docs": "apidoc -i ./src/ -o apidoc/"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   "dependencies": {
     "amqplib": "0.5.3",
     "async": "2.6.1",
+    "axios": "0.19.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "1.18.3",
     "compression": "1.7.3",

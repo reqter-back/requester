@@ -1,25 +1,7 @@
 var express = require('express');
-var multer  = require('multer')
-var path = require('path');
-var fs = require('fs');
-
-var storage = multer.diskStorage({
-   destination: function (req, file, cb) {
-     var dir = "apidoc/img/uploads";
-     if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir);
-     }
-     cb(null, 'apidoc/img/uploads')
-   },
-   filename: function (req, file, cb) {
-      var p = path.extname(file.originalname.toString());
-      cb(null, file.fieldname + '-' + Date.now() + p)
-   }
- })
-var upload = multer({ storage : storage})
 
 var router = express.Router();
-var usercontoller = require('../controllers/userController');
+var usercontoller = require('../controllers/customerController');
 var auth = require('../controllers/auth');
 
 
@@ -549,7 +531,7 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.put("/api/v1/changeavatar", auth.verifyToken, upload.single('avatar'), usercontoller.changeavatar);
+router.put("/api/v1/changeavatar", auth.verifyToken, usercontoller.changeavatar);
 
 /**
  * @api {put} /user/api/v1/updateprofile Update Profile

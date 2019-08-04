@@ -1,6 +1,5 @@
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
-const broker = require('./serviceBroker');
 const culture = process.env.CULTURE | "fa-IR";
 
 var wrapUser = function(user)

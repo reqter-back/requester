@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var usercontoller = require('../controllers/citiesController');
+var controller = require('../controllers/listController');
 /**
  * @api {get} /cities/api/v1/getall Get cities
  * @apiName GetCities
@@ -40,5 +40,5 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.get("/api/v1/getall", usercontoller.getcitieslist);
+router.get("/:contentType", controller.getcontentsbytype);
 module.exports = router;
