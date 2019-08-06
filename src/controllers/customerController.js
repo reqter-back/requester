@@ -104,7 +104,7 @@ exports.requestcode = [
                 //Send activation code to user phone
                 sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? saveResult.deviceToken : undefined);
                 if (process.env.NODE_ENV == "production")
-                    res.status(200).json({"success" : true, "authenticated" : false, "access_token" : saveResult.access_token, "message" : "Code generated and sent to your phone"});
+                    res.status(200).json({"success" : true, "authenticated" : false, "activation_code" : saveResult.activation_code, "message" : "Code generated and sent to your phone"});
                 else
                     res.status(200).json({"success" : true, "authenticated" : false, "access_token" : saveResult.access_token, "activation_code" : saveResult.activation_code, "message" : "Code generated and sent to your phone"});
 
