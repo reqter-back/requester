@@ -1,6 +1,6 @@
 var axios = require('axios');
 const broker = require('./serviceBroker');
-exports.myrequests = [
+exports.myRequests = [
     (req, res, next)=>{
         var apiRoot = process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
         var config = {
@@ -49,7 +49,7 @@ exports.myrequests = [
 
 exports.submit = [
   (req, res, next)=>{
-    broker.sendRPCMessage({body : req.body, clientId : req.clientId}, 'addcontent').then((result)=>{
+    broker.sendRPCMessage({body : req.body, spaceId : req.clientId}, 'addcontent').then((result)=>{
       var obj = JSON.parse(result.toString('utf8'));
       if (!obj.success)
       {
@@ -60,8 +60,14 @@ exports.submit = [
       }
       else
       {
-          res.status(201).json(wrapUser(obj.data));
+          res.status(201).json(obj.data);
       }
   });
   }
 ]
+
+exports.getRequestsOffers = []
+exports.getNewapplications = []
+exports.getOpenedApplications = []
+exports.openApplication = []
+exports.rejectApplication = []

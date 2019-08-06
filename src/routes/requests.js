@@ -3,10 +3,11 @@ var router = express.Router();
 var controller = require('../controllers/requestController');
 var auth = require('../controllers/auth');
 
-router.post("/allnew", auth.verifyToken, controller.getnewapplications);
-router.get("/opened", auth.verifyToken, controller.getopenedApplications);
-router.get("/open/:id", auth.verifyToken, controller.openApplication);
-router.get("/submit", auth.verifyToken, controller.submit);
-router.get("/myapplications", auth.verifyToken, controller.getMyApplications);
-router.get("/:id/offers", auth.verifyToken, controller.getOffers);
+router.get("/allnew", auth.loadHeaders, auth.verifyToken, controller.getNewapplications);
+router.get("/opened", auth.loadHeaders, auth.verifyToken, controller.getOpenedApplications);
+router.put("/open/:id", auth.loadHeaders, auth.verifyToken, controller.openApplication);
+router.put("/reject/:id", auth.loadHeaders, auth.verifyToken, controller.rejectApplication);
+router.post("/submit", auth.loadHeaders, auth.verifyToken, controller.submit);
+router.get("/", auth.loadHeaders, auth.verifyToken, controller.myRequests);
+router.get("/:id/offers", auth.loadHeaders, auth.verifyToken, controller.getRequestsOffers);
 module.exports = router;

@@ -17,7 +17,7 @@ var customer = require('./routes/customers');
 var lists = require('./routes/lists');
 var auth = require('./routes/auth');
 // var quote = require('./routes/quotes');
-// var request = require('./routes/requests');
+var request = require('./routes/requests');
 // var partner = require('./routes/partners');
 // var products = require('./routes/products');
 
@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use('/api/v1/customers', customer);
 // app.use('/partners', partner);
 // app.use('/quotes', quote);
-// app.use('/requests', request);
+app.use('/api/v1/requests', request);
 app.use('/api/v1/lists', lists);
 app.use('/api/v1/auth', auth);
 // app.use('/products', products);
