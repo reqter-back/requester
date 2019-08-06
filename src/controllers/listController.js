@@ -17,7 +17,7 @@ exports.getcontentsbytype = [
         console.log(config);
         axios(config).then(function (response) {
           if (response.data && response.data.data && response.data.data.contents)
-            res.send(response.data.data.contents.map(a => a.fields));
+            res.send(response.data.data.contents);
           else
           es.send(response.data);
           })
