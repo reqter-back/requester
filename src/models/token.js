@@ -18,5 +18,6 @@ module.exports = mongoose.model('Tokens', new Schema({
   refreshTokenExpiresOn: { type: Date },
   userId: { type: String },
   authenticated : {type : Boolean},
-  activation_code : {type : Number}
+  activation_code : {type : Number},
+  deviceToken : {type : String}
 }));

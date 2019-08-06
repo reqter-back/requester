@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var controller = require('../controllers/listController');
+var auth = require('../controllers/auth');
 /**
  * @api {get} /cities/api/v1/getall Get cities
  * @apiName GetCities
@@ -40,5 +41,5 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.get("/:contentType", controller.getcontentsbytype);
+router.get("/:contentType", auth.loadHeaders, auth.verifyToken, controller.getcontentsbytype);
 module.exports = router;

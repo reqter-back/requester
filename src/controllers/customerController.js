@@ -32,8 +32,8 @@ var sendVerifyCode = function(phoneNumber, code, deviceToken)
         if (deviceToken)
         {
             broker.sendRPCMessage({body : {"device" : deviceToken, "message" : {
-                "body" :"کد ورود شما به میواپ :‌" + code,
-                 "title" : "کد ورود"
+                "body" :"Your verification code is :" + code,
+                 "title" : "Verification code"
                 },
                 "data" : {
                  "type" : "LOGIN_VERIFICATION"
@@ -86,7 +86,8 @@ exports.requestcode = [
                 clientId: req.clientId,
                 refreshToken: undefined,
                 accessTokenExpiresOn: undefined,
-                userId: req.body.phoneNumber
+                userId: req.body.phoneNumber,
+                deviceToken : req.headers["deviceToken"]
               });
               accessToken.activation_code = getNewCode();
               accessToken.authenticated = false;
@@ -101,7 +102,7 @@ exports.requestcode = [
                 saveResult = saveResult && typeof saveResult == 'object' ? saveResult.toJSON() : saveResult;
                 console.log(saveResult)
                 //Send activation code to user phone
-                sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? obj.data.deviceToken : undefined);
+                sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? saveResult.deviceToken : undefined);
                 if (process.env.NODE_ENV == "production")
                     res.status(200).json({"success" : true, "authenticated" : false, "message" : "Code generated and sent to your phone"});
                 else

@@ -7,7 +7,7 @@ exports.getcontentsbytype = [
           baseURL : apiRoot,
           method : "get",
           params : {
-            "query" : "{contents(contentType : \"" + req.params.contentType + "\"){ fields }  }"
+            "query" : "{contents(contentType : \"" + req.params.contentType + "\"){ fields, _id }  }"
           },
           headers : {
               'Authorization' : req.headers.authorization,
