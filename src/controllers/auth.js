@@ -31,22 +31,18 @@ function verifyToken(req, res, next) {
     });
 }
 
-function getAppToken(req, res, next) {
-  var result = {"access_token" : process.env.API_TOKEN || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkMjZlNzkyZWI3NjFiMDAxN2YxOTVhZSIsImFjY291bnRfdHlwZSI6ImZyZWUiLCJpYXQiOjE1NjQ5MDk3MTAsImV4cCI6MTU2NzUwMTcxMH0.zxfUrJO7iHDYF8a2uHT_vFSZG1S_AZI2wPMoS_8PJ5I"}
-  res.send(result);
-}
  exports.loadHeaders = loadHeaders;
  exports.verifyToken = verifyToken;
  exports.gettoken = [
   (req, res, next)=>{
-      var apiRoot = process.env.APPS_ACCESSTOKEN_API || "https://app-ipanel.herokuapp.com";
+      var apiRoot = process.env.APPS_ACCESSTOKEN_URL;
       var config = {
         url : "/auth/token",
         baseURL : apiRoot,
         method : "post",
         data : {
-          "username" : "loan@reqter.com",
-          "password" : "logrezaee24359"
+          "username" : process.env["APP_" + req.headers.clientid + "_USERNAME"],
+          "password" : process.env["APP_" + req.headers.clientid + "_PASSWORD"]
         },
         headers : {
             'clientid' : req.headers.clientid

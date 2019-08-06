@@ -6,12 +6,14 @@
 
 var app = require('../app');
 var http = require('http');
+var broker = require('../controllers/serviceBroker')
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '8036');
 app.set('port', port);
+broker.start();
 /**
  * Create HTTP server.
  */

@@ -6,7 +6,7 @@ var auth = require('../controllers/auth');
 
 
 /**
- * @api {post} /user/api/v1/requestcode Request code
+ * @api {post} /requestcode Request code
  * @apiName Request activation code for a phonenumber
  * @apiGroup User
  *
@@ -41,9 +41,9 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.post("/api/v1/requestcode", usercontoller.requestcode);
+router.post("/requestcode", usercontoller.requestcode);
 /**
- * @api {post} /user/api/v1/verifycode VerifyCode
+ * @api {post} /verifycode VerifyCode
  * @apiName Verify Code
  * @apiGroup User
  *
@@ -105,9 +105,9 @@ router.post("/api/v1/requestcode", usercontoller.requestcode);
     "error" : "invalid phone number"
  }
  */
-router.post("/api/v1/verifycode", auth.verifyCode, usercontoller.verifycode);
+router.post("/verifycode", auth.loadHeaders, usercontoller.verifycode);
 /**
- * @api {post} /user/api/v1/loginbyusername Login By UserName
+ * @api {post} /loginbyusername Login By UserName
  * @apiName LoginByUserName
  * @apiGroup User
  *
@@ -169,10 +169,10 @@ router.post("/api/v1/verifycode", auth.verifyCode, usercontoller.verifycode);
     }
  }
  */
-router.post('/api/v1/login', usercontoller.login);
+router.post('/login', usercontoller.login);
 
 /**
- * @api {post} /user/api/v1/signupbyusername Signup by username and email
+ * @api {post} /signupbyusername Signup by username and email
  * @apiName SignupByUserName
  * @apiGroup User
  *
@@ -224,11 +224,11 @@ router.post('/api/v1/login', usercontoller.login);
     }
  }
  */
-router.post("/api/v1/register", usercontoller.register);
+router.post("/register", usercontoller.register);
 
 
 /**
- * @api {get} /user/api/v1/getuserinfo Get User Info
+ * @api {get} /getuserinfo Get User Info
  * @apiName GetUserInfo
  * @apiGroup User
  *
@@ -302,9 +302,9 @@ HTTP/1.1 200 OK
     "error" : "User not found"
  }
  */
-router.get("/api/v1/getuserinfo", auth.verifyToken, usercontoller.getuserinfo);
+router.get("/getuserinfo", auth.verifyToken, usercontoller.getuserinfo);
 /**
- * @api {put} /user/api/v1/changecity Change City
+ * @api {put} /changecity Change City
  * @apiName ChangeCity
  * @apiGroup User
  *
@@ -379,10 +379,10 @@ HTTP/1.1 200 OK
     "error" : "City not found"
  }
  */
-router.put("/api/v1/changecity", auth.verifyToken, usercontoller.changecity);
+router.put("/changecity", auth.verifyToken, usercontoller.changecity);
 
 /**
- * @api {put} /user/api/v1/changenumber Change Number
+ * @api {put} /changenumber Change Number
  * @apiName ChangeNumber
  * @apiGroup User
  *
@@ -446,10 +446,10 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.put("/api/v1/changenumber", auth.verifyToken, usercontoller.changenumber);
+router.put("/changenumber", auth.verifyToken, usercontoller.changenumber);
 
 /**
- * @api {put} /user/api/v1/changeavatar Change Avatar
+ * @api {put} /changeavatar Change Avatar
  * @apiName ChangeAvatar
  * @apiGroup User
  *
@@ -531,10 +531,10 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.put("/api/v1/changeavatar", auth.verifyToken, usercontoller.changeavatar);
+router.put("/changeavatar", auth.verifyToken, usercontoller.changeavatar);
 
 /**
- * @api {put} /user/api/v1/updateprofile Update Profile
+ * @api {put} /updateprofile Update Profile
  * @apiName UpdateProfile
  * @apiGroup User
  *
@@ -606,11 +606,11 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.put("/api/v1/updateprofile", auth.verifyToken, usercontoller.updateprofile);
+router.put("/updateprofile", auth.verifyToken, usercontoller.updateprofile);
 
 
 /**
- * @api {put} /user/api/v1/changelanguage Change Language
+ * @api {put} /changelanguage Change Language
  * @apiName ChangeLanguage
  * @apiGroup User
  *
@@ -680,11 +680,11 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.put("/api/v1/changelanguage", auth.verifyToken, usercontoller.changelanguage);
+router.put("/changelanguage", auth.verifyToken, usercontoller.changelanguage);
 
 
 /**
- * @api {put} /user/api/v1/changenotification Change Notification
+ * @api {put} /changenotification Change Notification
  * @apiName ChangeNotification
  * @apiGroup User
  *
@@ -754,10 +754,10 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.put("/api/v1/changenotification", auth.verifyToken, usercontoller.changenotification);
+router.put("/changenotification", auth.verifyToken, usercontoller.changenotification);
 
 /**
- * @api {delete} /user/api/v1/deleteaccount Delete Account
+ * @api {delete} /deleteaccount Delete Account
  * @apiName DeleteAccount
  * @apiGroup User
  *
@@ -800,11 +800,11 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.delete("/api/v1/deleteaccount", auth.verifyToken, usercontoller.deleteaccount);
+router.delete("/deleteaccount", auth.verifyToken, usercontoller.deleteaccount);
 
 
 /**
- * @api {put} /user/api/v1/locationchanged Location Changed
+ * @api {put} /locationchanged Location Changed
  * @apiName LocationChnaged
  * @apiGroup User
  *
@@ -848,5 +848,5 @@ HTTP/1.1 500 Internal server error
     }
  }
  */
-router.put("/api/v1/locationchanged", auth.verifyToken, usercontoller.locationchanged);
+router.put("/locationchanged", auth.verifyToken, usercontoller.locationchanged);
 module.exports = router;

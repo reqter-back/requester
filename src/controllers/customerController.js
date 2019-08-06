@@ -1,7 +1,7 @@
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 const culture = process.env.CULTURE | "fa-IR";
-
+const broker = require('./serviceBroker')
 var wrapUser = function(user)
 {
     if (user)
@@ -58,7 +58,8 @@ exports.requestcode = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'requestcode').then((result)=>{
+            console.log(req.body);
+            broker.sendRPCMessage({body : req.body}, 'token').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -68,12 +69,13 @@ exports.requestcode = [
                 }
                 else
                 {
+                    console.log(obj.data)
                     //Send activation code to user phone
                     sendVerifyCode(req.body.phoneNumber, obj.data.activation_code, obj.data.deviceToken ? obj.data.activation_code : req.body.deviceToken);
                     if (process.env.NODE_ENV == "production")
                         res.status(200).json({"success" : true, "message" : "Code generated and sent to your phone"});
                     else
-                        res.status(200).json({"success" : true, "activation_code" : obj.data.activation_code, "message" : "Code generated and sent to your phone"});
+                        res.status(200).json({"success" : true, "access_token" : obj.data.access_token, "activation_code" : obj.data.activation_code, "message" : "Code generated and sent to your phone"});
                 }
             }); 
         }
@@ -96,7 +98,7 @@ exports.verifycode = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'verifycode').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'verifycode').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -187,7 +189,7 @@ exports.register = [
         else
         {
             console.log('add user started.')
-            broker.sendRPCMessage(req.body, 'register').then((result)=>{
+            broker.sendRPCMessage({body : eq.body}, 'register').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -221,7 +223,7 @@ exports.changecity = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'changecity').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'changecity').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -260,7 +262,7 @@ exports.changenumber = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'changenumber').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'changenumber').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -302,7 +304,7 @@ exports.changeavatar = [
         }
         else
         {
-            broker.sendRPCMessage({id : req.body.id, avatar : req.file}, 'changeavatar').then((result)=>{
+            broker.sendRPCMessage({body : {id : req.body.id, avatar : req.file}}, 'changeavatar').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -343,7 +345,7 @@ exports.updateprofile = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'updateprofile').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'updateprofile').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -380,7 +382,7 @@ exports.changelanguage = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'changelanguage').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'changelanguage').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -416,7 +418,7 @@ exports.changenotification = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'changenotification').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'changenotification').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -451,7 +453,7 @@ exports.deleteaccount = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'deleteaccount').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'deleteaccount').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -488,7 +490,7 @@ exports.locationchanged = [
         }
         else
         {
-            broker.sendRPCMessage(req.body, 'locationchanged').then((result)=>{
+            broker.sendRPCMessage({body : req.body}, 'locationchanged').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -520,7 +522,7 @@ exports.getuserinfo = [
         }
         else
         {
-            broker.sendRPCMessage(req.query, 'findbyphone').then((result)=>{
+            broker.sendRPCMessage({body : req.query}, 'findbyphone').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {

@@ -13,7 +13,7 @@ app.use(compression()); //Compress all routes
 app.use(helmet());
 app.use(cors());
 
-// var customer = require('./routes/customers');
+var customer = require('./routes/customers');
 var lists = require('./routes/lists');
 var auth = require('./routes/auth');
 // var quote = require('./routes/quotes');
@@ -25,7 +25,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-// app.use('/customers', customer);
+app.use('/api/v1/customers', customer);
 // app.use('/partners', partner);
 // app.use('/quotes', quote);
 // app.use('/requests', request);
