@@ -59,7 +59,7 @@ exports.requestcode = [
         else
         {
             console.log(req.body);
-            broker.sendRPCMessage({body : req.body}, 'token').then((result)=>{
+            broker.sendRPCMessage({body : req.body, headers : req.headers, method : "POST", query : {}}, 'token').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
@@ -189,7 +189,7 @@ exports.register = [
         else
         {
             console.log('add user started.')
-            broker.sendRPCMessage({body : eq.body}, 'register').then((result)=>{
+            broker.sendRPCMessage({body : req.body, clientId : req.clientId}, 'register').then((result)=>{
                 var obj = JSON.parse(result.toString('utf8'));
                 if (!obj.success)
                 {
