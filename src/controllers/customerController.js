@@ -1,7 +1,10 @@
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 const culture = process.env.CULTURE | "fa-IR";
-const broker = require('./serviceBroker')
+const broker = require('./serviceBroker');
+const Tokens = require('../models/token');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
 var wrapUser = function(user)
 {
     if (user)
@@ -46,6 +49,23 @@ var sendVerifyCode = function(phoneNumber, code, deviceToken)
     }
 }
 
+var generateToken = function(client, authenticated, expireTime, scope)
+{
+  var token;
+  token = jwt.sign({ clientId : client, scope : scope, authenticated : authenticated }, config.secret, {
+    expiresIn: expireTime
+  });
+  return token;
+}
+
+function getNewCode(phoneNumber)
+{
+    var min = 1000;
+    var max = 9999;
+    var code = Math.floor(Math.random() * (max - min)) + min;
+    //Sent code to the phone
+    return code;
+}
 exports.requestcode = [
    
     (req, res, next) =>{
@@ -59,32 +79,41 @@ exports.requestcode = [
         else
         {
             console.log(req.body);
-            broker.sendRPCMessage({body : req.body, headers : req.headers, method : "POST", query : {}}, 'token').then((result)=>{
-                var obj = JSON.parse(result.toString('utf8'));
-                if (!obj.success)
-                {
-                    if (obj.error)
-                        return res.status(500).json(obj);
-                    return res.status(500);
-                }
+            
+            var accessToken = new Tokens({
+                accessToken: generateToken(req.clientId, false, 5 * 60 * 60, "verify"),
+                accessTokenExpiresOn: process.env.TEMP_TOKEN_EXPIRE_TIME || 5 * 60 * 60,
+                clientId: req.clientId,
+                refreshToken: undefined,
+                accessTokenExpiresOn: undefined,
+                userId: req.body.phoneNumber
+              });
+              accessToken.activation_code = getNewCode();
+              accessToken.authenticated = false;
+              // Can't just chain `lean()` to `save()` as we did with `findOne()` elsewhere. Instead we use `Promise` to resolve the data.
+              return new Promise( function(resolve,reject){
+                accessToken.save(function(err,data){
+                  if( err ) reject( err );
+                  else resolve( data );
+                }) ;
+              }).then(function(saveResult){
+                // `saveResult` is mongoose wrapper object, not doc itself. Calling `toJSON()` returns the doc.
+                saveResult = saveResult && typeof saveResult == 'object' ? saveResult.toJSON() : saveResult;
+                console.log(saveResult)
+                //Send activation code to user phone
+                sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? obj.data.deviceToken : undefined);
+                if (process.env.NODE_ENV == "production")
+                    res.status(200).json({"success" : true, "authenticated" : false, "message" : "Code generated and sent to your phone"});
                 else
-                {
-                    console.log(obj.data)
-                    //Send activation code to user phone
-                    sendVerifyCode(req.body.phoneNumber, obj.data.activation_code, obj.data.deviceToken ? obj.data.activation_code : req.body.deviceToken);
-                    if (process.env.NODE_ENV == "production")
-                        res.status(200).json({"success" : true, "message" : "Code generated and sent to your phone"});
-                    else
-                        res.status(200).json({"success" : true, "access_token" : obj.data.access_token, "activation_code" : obj.data.activation_code, "message" : "Code generated and sent to your phone"});
-                }
-            }); 
+                    res.status(200).json({"success" : true, "authenticated" : false, "access_token" : saveResult.access_token, "activation_code" : saveResult.activation_code, "message" : "Code generated and sent to your phone"});
+
+                return saveResult;
+              }); 
         }
     }
 ]
 
 exports.verifycode = [
-    body('phoneNumber', "Phone number must not be empty").isMobilePhone(culture).withMessage('Invalid phone number.'),
-    body('code', "Activation code must not be empty"),
     //Sanitize fields
     sanitizeBody('code').trim().escape(),
     sanitizeBody('phoneNumber').trim().escape(),
@@ -98,21 +127,32 @@ exports.verifycode = [
         }
         else
         {
-            broker.sendRPCMessage({body : req.body}, 'verifycode').then((result)=>{
-                var obj = JSON.parse(result.toString('utf8'));
-                if (!obj.success)
+            console.log({clientId : req.clientId, 'userId' : req.body.phoneNumber, activation_code : req.body.code, authenticated : false});
+            Tokens.findOne({clientId : req.clientId, 'userId' : req.body.phoneNumber, activation_code : req.body.code, authenticated : false}).exec(function(err, tkn){
+                var result = {success : false, message : undefined, error : "Invalid code" };
+                if (err)
                 {
-                    if (obj.error)
-                        return res.status(500).json(obj);
-                    else
-                    {
-                        obj.error = "invalid phoneNumber or code";
-                        res.status(404).json(obj);
-                    }
+                    res.status(400).send(result);
+                    return;
+                }
+                if (tkn)
+                {
+                    var token = generateToken(req.clientId, true, 30 * 24 * 60 * 60, "read/write");
+                    tkn.access_token = token;
+                    tkn.code = undefined;
+                    tkn.authenticated = true;
+                    tkn.save((err, data)=>{
+                        if (err)
+                        {
+                            res.status(500).send({"success" : false,  error : "Unable to generate token"});
+                            return;
+                        }
+                        res.send({"success" : true, "access_token" : token, expiresIn : 30 * 24 * 60 * 60});
+                    });
                 }
                 else
                 {
-                    res.status(200).json(wrapUser(obj.data));
+                    res.status(404).send({"success" : false,  error : "Invalid code"});
                 }
             });
         }

@@ -7,6 +7,7 @@
 var app = require('../app');
 var http = require('http');
 var broker = require('../controllers/serviceBroker')
+var db = require('../db/init-db');
 /**
  * Get port from environment and store in Express.
  */
@@ -87,3 +88,4 @@ function onListening() {
     : 'port ' + addr.port;
   console.log("Web server listening on port : " + addr.port)
 }
+db();

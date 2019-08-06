@@ -41,7 +41,7 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.post("/requestcode", usercontoller.requestcode);
+router.post("/requestcode", auth.loadHeaders, usercontoller.requestcode);
 /**
  * @api {post} /verifycode VerifyCode
  * @apiName Verify Code
@@ -169,7 +169,7 @@ router.post("/verifycode", auth.loadHeaders, usercontoller.verifycode);
     }
  }
  */
-router.post('/login', usercontoller.login);
+router.post('/login', auth.loadHeaders, usercontoller.login);
 
 /**
  * @api {post} /signupbyusername Signup by username and email
@@ -224,7 +224,7 @@ router.post('/login', usercontoller.login);
     }
  }
  */
-router.post("/register", usercontoller.register);
+router.post("/register", auth.loadHeaders, usercontoller.register);
 
 
 /**
