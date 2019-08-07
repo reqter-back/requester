@@ -11,7 +11,7 @@ exports.getcontentsbytype = [
           },
           headers : {
               'authorization' : req.headers.authorization,
-              'clientid' : req.spaceId
+              'clientid' : req.spaceId.toString()
           }
         };
         console.log(JSON.stringify(config));
