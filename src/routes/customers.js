@@ -41,7 +41,7 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.post("/requestcode", auth.loadHeaders, usercontoller.requestcode);
+router.post("/requestcode", auth.verifyToken, usercontoller.requestcode);
 /**
  * @api {post} /verifycode VerifyCode
  * @apiName Verify Code
@@ -105,7 +105,7 @@ router.post("/requestcode", auth.loadHeaders, usercontoller.requestcode);
     "error" : "invalid phone number"
  }
  */
-router.post("/verifycode", auth.loadHeaders, usercontoller.verifycode);
+router.post("/verifycode", auth.verifyToken, usercontoller.verifycode);
 /**
  * @api {post} /loginbyusername Login By UserName
  * @apiName LoginByUserName

@@ -8,7 +8,7 @@ exports.myRequests = [
           baseURL : apiRoot,
           method : "get",
           params : {
-            "query" : "{contents(contentType : \"" + req.params.contentType + "\"){ fields, _id }  }"
+            "query" : "{contents(contentType : \"" + req.params.contentType + "\"){ fields, _id, sys }  }"
           },
           headers : {
               'Authorization' : req.headers.authorization,

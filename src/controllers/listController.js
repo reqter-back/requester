@@ -7,14 +7,14 @@ exports.getcontentsbytype = [
           baseURL : apiRoot,
           method : "get",
           params : {
-            "query" : "{contents(contentType : \"" + req.params.contentType + "\"){ fields, _id }  }"
+            "query" : '{contents(contentType : "' + req.params.contentType + '"){ fields, _id, sys{issuer issueDate} }  }'
           },
           headers : {
-              'Authorization' : req.headers.authorization,
-              'clientid' : req.headers.clientid
+              'authorization' : req.headers.authorization,
+              'clientid' : req.spaceId
           }
         };
-        console.log(config);
+        console.log(JSON.stringify(config));
         axios(config).then(function (response) {
           if (response.data && response.data.data && response.data.data.contents)
             res.send(response.data.data.contents);

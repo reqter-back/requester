@@ -1,6 +1,19 @@
 var jwt = require('jsonwebtoken');
 const config = require('../config');
 const axios  = require('axios');
+const Apps = require('../models/client');
+const Tokens = require('../models/token');
+const AdminUsers = require('../models/adminuser');
+
+var generateToken = function(client, authenticated, expireTime, scope)
+{
+  var token;
+  token = jwt.sign({ clientId : client, scope : scope, authenticated : authenticated }, config.secret, {
+    expiresIn: expireTime
+  });
+  return token;
+}
+
 function loadHeaders(req, res, next) {
   if (req.headers.clientid)
     req.clientId = req.headers.clientid;
@@ -9,25 +22,43 @@ function loadHeaders(req, res, next) {
   next();
 }
 function verifyToken(req, res, next) {
-    var token = req.headers['authorization'];
-    if (token === null || token == undefined)
-    {
-        token = req.headers['x-access-token'];
-        if (!token || token == null)
-          return res.status(403).send({ auth: false, message: 'No token provided.' });
-          console.log(token)
-    }
-    if (!token || token == null)
-      return res.status(403).send({ auth: false, message: 'No token provided.' });
-      token = token.replace("Bearer ", "");
-    
-      jwt.verify(token, config.secret, function(err, decoded) {
+  var token = req.headers['authorization'];
+  if (token === null || token == undefined)
+  {
+      token = req.headers['x-access-token'];
+      if (!token || token == null)
+        return res.status(403).send({ auth: false, message: 'No token provided.' });
+        console.log(token)
+  }
+  if (!token || token == null)
+    return res.status(403).send({ auth: false, message: 'No token provided.' });
+  token = token.replace("Bearer ", "");
+
+  jwt.verify(token, config.secret, function(err, decoded) {
+    if (err)
+    return res.status(401).send({ auth: false, message: 'Failed to authenticate token.' });
+    // if everything good, save to request for use in other routes
+    console.log("auth : " + JSON.stringify(decoded));
+    Apps.findOne({clientId : decoded.clientId}).exec((err, app)=>{
+      var result = {success : false, message : undefined, error : "Invalid code" };
       if (err)
-      return res.status(401).send({ auth: false, message: 'Failed to authenticate token.' });
-      // if everything good, save to request for use in other routes
-      req.userId = decoded.id;
-      console.log("auth : " + JSON.stringify(decoded));
-      next();
+      {
+        result.error = err;
+        res.status(400).send(result);
+        return;
+      }
+      if (app)
+      {
+          req.spaceId = app.spaceId;
+          req.clientId = app.clientId;
+          next();
+      }
+      else
+      {
+        result.error = "Invalid client";
+        res.status(500).send(result);
+      }
+    });
     });
 }
 
@@ -35,44 +66,37 @@ function verifyToken(req, res, next) {
  exports.verifyToken = verifyToken;
  exports.gettoken = [
   (req, res, next)=>{
-      var apiRoot = process.env.APPS_ACCESSTOKEN_URL;
-      var config = {
-        url : "/auth/token",
-        baseURL : apiRoot,
-        method : "post",
-        data : {
-          "username" : process.env["APP_" + req.headers.clientid + "_USERNAME"],
-          "password" : process.env["APP_" + req.headers.clientid + "_PASSWORD"]
-        },
-        headers : {
-            'clientid' : req.headers.clientid
+      Apps.findOne({clientId : req.clientId}).exec((err, app)=>{
+        var result = {success : false, message : undefined, error : "Invalid code" };
+        if (err)
+        {
+            res.status(400).send(result);
+            return;
         }
-      };
-      console.log(config);
-      axios(config).then(function (response) {
-        res.send({"access_token" : response.data.access_token});
-        })
-        .catch(function (error) {
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-            res.status(error.response.status).send(error.response.data);
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            console.log(error.request);
-            res.status(204).send("No response from server");
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            console.log('Error', error.message);
-            res.status(500).send(error.message);
-          }
-          console.log(error.config);
-          res.status(400).send(error.config);
-        });
+        if (app)
+        {
+          var accessToken = new Tokens({
+            accessToken: generateToken(app.clientId, false, 5 * 60 * 60, "verify"),
+            accessTokenExpiresOn: process.env.TEMP_TOKEN_EXPIRE_TIME || 5 * 60 * 60,
+            clientId: app.clientId,
+            deviceToken : req.headers["deviceToken"]
+          });
+          accessToken.save(function(err,data){
+            if( err ) {
+              result.error = err;
+              res.status(500).send(result);
+              return;
+            }
+            else {
+              res.status(200).json({"success" : true, "access_token" : data.accessToken});
+            }
+          }) ;
+        }
+        else
+        {
+          result.error = "Invalid client";
+          res.status(500).send(result);
+        }
+      });
   }
 ];
