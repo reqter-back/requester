@@ -8,11 +8,11 @@ exports.myRequests = [
           baseURL : apiRoot,
           method : "get",
           params : {
-            "query" : "{contents(contentType : \"" + req.params.contentType + "\"){ fields, _id, sys }  }"
+            "query" : '{contents(contentType : "' + req.params.contentType + '", status:"published"){ fields, _id, sys{issuer issueDate} }  }'
           },
           headers : {
-              'Authorization' : req.headers.authorization,
-              'clientid' : req.headers.clientid
+              'authorization' : req.headers.authorization,
+              'clientid' : req.spaceId.toString()
           }
         };
         console.log(config);
@@ -20,7 +20,7 @@ exports.myRequests = [
           if (response.data && response.data.data && response.data.data.contents)
             res.send(response.data.data.contents.map(a => a.fields));
           else
-          es.send(response.data);
+            res.send(response.data);
           })
           .catch(function (error) {
             if (error.response) {
@@ -49,7 +49,7 @@ exports.myRequests = [
 
 exports.submit = [
   (req, res, next)=>{
-    broker.sendRPCMessage({body : req.body, spaceId : req.clientId}, 'addcontent').then((result)=>{
+    broker.sendRPCMessage({body : req.body, spaceId : req.spaceId}, 'addcontent').then((result)=>{
       var obj = JSON.parse(result.toString('utf8'));
       if (!obj.success)
       {

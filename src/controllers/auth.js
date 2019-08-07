@@ -49,6 +49,7 @@ function verifyToken(req, res, next) {
       }
       if (app)
       {
+        console.log('spaceId is : ' + app.spaceId)
           req.spaceId = app.spaceId;
           req.clientId = app.clientId;
           next();
