@@ -23,7 +23,7 @@ exports.myRequests = [
     axios(config)
       .then(function(response) {
         if (response.data && response.data.data && response.data.data.contents)
-          res.send(response.data.data.contents.map(a => a.fields));
+          res.send(response.data.data.contents);
         else res.send(response.data);
       })
       .catch(function(error) {
