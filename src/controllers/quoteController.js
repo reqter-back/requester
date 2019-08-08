@@ -6,5 +6,4 @@ exports.acceptedoffers = [];
 exports.myoffers = [];
 exports.lostoffers = [];
 exports.issueOffer = [];
-exports.customerClose = [];
-exports.partnerClose = [];
+exports.close = [];
