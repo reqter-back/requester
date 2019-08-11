@@ -7,7 +7,7 @@ router.put("/accept/:id", auth.verifyToken, controller.customerAccpet);
 router.put("/reject/:id", auth.verifyToken, controller.customerReject);
 router.put("/close/:id", auth.verifyToken, controller.close);
 router.post("/issueOffer", auth.verifyToken, controller.issueOffer);
-router.get("/", auth.verifyToken, controller.myoffers);
+router.get("/alloffers", auth.verifyToken, controller.myoffers);
 router.get("/acceptedoffers", auth.verifyToken, controller.acceptedoffers);
 router.get("/wonoffers", auth.verifyToken, controller.wonoffers);
 router.get("/lostoffers", auth.verifyToken, controller.lostoffers);
