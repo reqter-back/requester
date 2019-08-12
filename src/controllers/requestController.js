@@ -73,15 +73,24 @@ exports.getRequestsOffers = [
   (req, res, next) => {
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
+    var query = "";
+    if (req.query) {
+      query += "fields:{";
+      var start = true;
+      for (var attr in req.query) {
+        if (!start) query += "," + attr + ':"' + req.query[attr] + '"';
+        else query += attr + ':"' + req.query[attr] + '"';
+      }
+      query += "}";
+      console.log(query);
+    }
     var config = {
       url: "/graphql",
       baseURL: apiRoot,
       method: "get",
       params: {
         query:
-          '{contents(contentType : "' +
-          req.params.contentType +
-          '"){ fields, _id, sys{issuer issueDate} }  }'
+          "{contents(" + query + "){ fields, _id, sys{issuer issueDate} }  }"
       },
       headers: {
         authorization: req.headers.authorization,
