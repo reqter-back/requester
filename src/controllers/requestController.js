@@ -3,12 +3,6 @@ const async = require("async");
 const broker = require("./serviceBroker");
 exports.myRequests = [
   (req, res, next) => {
-    async.parallel(
-      {
-        contentType: {}
-      },
-      function(err, results) {}
-    );
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
     var config = {
