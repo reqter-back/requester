@@ -87,11 +87,11 @@ exports.gettoken = [
           accessToken: generateToken(
             app.clientId,
             false,
-            5 * 60 * 60,
+            365 * 24 * 60 * 60,
             "verify"
           ),
           accessTokenExpiresOn:
-            process.env.TEMP_TOKEN_EXPIRE_TIME || 5 * 60 * 60,
+            process.env.TEMP_TOKEN_EXPIRE_TIME || 365 * 24 * 60 * 60,
           clientId: app.clientId,
           deviceToken: req.headers["deviceToken"]
         });
@@ -101,13 +101,11 @@ exports.gettoken = [
             res.status(500).send(result);
             return;
           } else {
-            res
-              .status(200)
-              .json({
-                success: true,
-                access_token: data.accessToken,
-                expiresIn: data.accessTokenExpiresOn
-              });
+            res.status(200).json({
+              success: true,
+              access_token: data.accessToken,
+              expiresIn: 365 * 24 * 60 * 60
+            });
           }
         });
       } else {
