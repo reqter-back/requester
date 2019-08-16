@@ -27,7 +27,7 @@ var sendVerifyCode = function(phoneNumber, code, deviceToken)
         {
             msg = code.toString();
         }
-        broker.sendRPCMessage({body : {"phoneNumber" : phoneNumber, "message" : msg}}, 'sendVerifyCode').then((result)=>{
+        broker.sendRPCMessage({body : {"phoneNumber" : phoneNumber, "message" : msg}}, 'sendMessage').then((result)=>{
             var obj = JSON.parse(result.toString('utf8'));
             if (!obj.success)
                 console.log('Code not sent. Error code : ' + obj.error  + " response : " + obj.data);
