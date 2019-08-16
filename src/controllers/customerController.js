@@ -21,6 +21,9 @@ var sendVerifyCode = function(phoneNumber, code, deviceToken)
     {
         var msg = "";
         try{
+            console.log(process.env["SMSMESSAGE_" + req.clientId ? req.clientId : req.clientid]);
+            console.log(req.clientId);
+            console.log(req.clientid);
          msg = process.env["SMSMESSAGE_" + req.clientId ? req.clientId : req.clientid].replace("code", code);
         }
         catch
