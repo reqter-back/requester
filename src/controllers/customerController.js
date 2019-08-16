@@ -19,7 +19,15 @@ var sendVerifyCode = function(phoneNumber, code, deviceToken)
 {
     if (process.env.NODE_ENV == "production")
     {
-        broker.sendRPCMessage({body : {"phoneNumber" : phoneNumber, "code" : code}}, 'sendVerifyCode').then((result)=>{
+        var msg = "";
+        try{
+         msg = process.env["SMSMESSAGE_" + req.clientId ? req.clientId : req.clientid].replace("code", code);
+        }
+        catch
+        {
+            msg = code.toString();
+        }
+        broker.sendRPCMessage({body : {"phoneNumber" : phoneNumber, "message" : msg}}, 'sendVerifyCode').then((result)=>{
             var obj = JSON.parse(result.toString('utf8'));
             if (!obj.success)
                 console.log('Code not sent. Error code : ' + obj.error  + " response : " + obj.data);
