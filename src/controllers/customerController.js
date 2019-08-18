@@ -15,11 +15,11 @@ var wrapUser = function(user)
     return user;
 }
 
-var sendVerifyCode = function(phoneNumber, code, deviceToken)
+var sendVerifyCode = function(phoneNumber, code, deviceToken, clientId)
 {
     if (process.env.NODE_ENV == "production")
     {
-        broker.sendRPCMessage({body : {"phoneNumber" : phoneNumber, "code" : code, clientId : req.clientId}}, 'sendVerifyCode').then((result)=>{
+        broker.sendRPCMessage({body : {"phoneNumber" : phoneNumber, "code" : code, clientId : clientId}}, 'sendVerifyCode').then((result)=>{
             var obj = JSON.parse(result.toString('utf8'));
             if (!obj.success)
                 console.log('Code not sent. Error code : ' + obj.error  + " response : " + obj.data);
@@ -102,7 +102,7 @@ exports.requestcode = [
                 saveResult = saveResult && typeof saveResult == 'object' ? saveResult.toJSON() : saveResult;
                 console.log(saveResult)
                 //Send activation code to user phone
-                sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? saveResult.deviceToken : undefined);
+                sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? saveResult.deviceToken : undefined, req.clientId);
                 if (process.env.NODE_ENV == "production")
                     res.status(200).json({"success" : true, "authenticated" : false, "activation_code" : saveResult.activation_code, "message" : "Code generated and sent to your phone"});
                 else
