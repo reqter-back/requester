@@ -48,7 +48,7 @@ exports.myRequests = [
 exports.submit = [
   (req, res, next) => {
     broker
-      .sendRPCMessage({ body: req.body, spaceId: req.spaceId }, "addcontent")
+      .sendRPCMessage({ body: req.body, spaceId: req.spaceId }, "submitcontent")
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
         if (!obj.success) {
