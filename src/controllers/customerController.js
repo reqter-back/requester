@@ -67,16 +67,26 @@ function getNewCode(phoneNumber)
     return code;
 }
 exports.requestcode = [
-   
+    body("phoneNumber", "Phone number is required")
+    .not()
+    .isEmpty()
+    .withMessage("Phone number is required")
+    .isNumeric()
+    .isLength({ min: 11, max: 14 })
+    .withMessage("Phone number is invalid")
+    .matches(/^(\+98|0)?9\d{9}$/)
+    .withMessage("Phone number is in invalid format"),
     (req, res, next) =>{
         var errors = validationResult(req);
-        if (!errors.isEmpty())
-        {  
-            //There are errors. send error result
-            res.status(400).json({"success" : false, "error" : errors});
-            return;
-        }
-        else
+    if (!errors.isEmpty()) {
+      //There are errors. send error result
+      return res.status(400).json({
+        success: false,
+        code: "INVALID_REQUEST",
+        errors: errors.array()
+      });
+      return;
+    } else 
         {
             console.log(req.body);
             
@@ -104,7 +114,7 @@ exports.requestcode = [
                 //Send activation code to user phone
                 sendVerifyCode(req.body.phoneNumber, saveResult.activation_code, saveResult.deviceToken ? saveResult.deviceToken : undefined, req.clientId);
                 if (process.env.NODE_ENV == "production")
-                    res.status(200).json({"success" : true, "authenticated" : false, "activation_code" : saveResult.activation_code, "message" : "Code generated and sent to your phone"});
+                    res.status(200).json({"success" : true, "authenticated" : false, "message" : "Code generated and sent to your phone"});
                 else
                     res.status(200).json({"success" : true, "authenticated" : false, "access_token" : saveResult.access_token, "activation_code" : saveResult.activation_code, "message" : "Code generated and sent to your phone"});
 
@@ -115,19 +125,37 @@ exports.requestcode = [
 ]
 
 exports.verifycode = [
+    body("phoneNumber", "Phone number is required")
+    .not()
+    .isEmpty()
+    .withMessage("Phone number is required")
+    .isNumeric()
+    .isLength({ min: 11, max: 14 })
+    .withMessage("Phone number is invalid")
+    .matches(/^(\+98|0)?9\d{9}$/)
+    .withMessage("Phone number is in invalid format"),
+    body("code", "Code is required")
+    .not()
+    .isEmpty()
+    .withMessage("Code is required")
+    .isNumeric()
+    .isLength({ min: 4, max: 4 })
+    .withMessage("Code is invalid"),
     //Sanitize fields
     sanitizeBody('code').trim().escape(),
     sanitizeBody('phoneNumber').trim().escape(),
     (req, res, next) =>{
         var errors = validationResult(req);
-        if (!errors.isEmpty())
-        {  
-            //There are errors. send error result
-            res.status(400).json({"success" : false, "error" : errors});
-            return;
-        }
-        else
-        {
+    if (!errors.isEmpty()) {
+      //There are errors. send error result
+      return res.status(422).json({
+        success: false,
+        code: "INVALID_REQUEST",
+        errors: errors.array()
+      });
+      return;
+    } 
+    else {
             console.log({clientId : req.clientId, 'userId' : req.body.phoneNumber, activation_code : req.body.code, authenticated : false});
             Tokens.findOne({clientId : req.clientId, 'userId' : req.body.phoneNumber, activation_code : req.body.code, authenticated : false}).exec(function(err, tkn){
                 var result = {success : false, message : undefined, error : "Invalid code" };
@@ -139,10 +167,17 @@ exports.verifycode = [
                 if (tkn)
                 {
                     var token = generateToken(req.clientId, true, 30 * 24 * 60 * 60, "read/write");
-                    tkn.access_token = token;
-                    tkn.code = undefined;
-                    tkn.authenticated = true;
-                    tkn.save((err, data)=>{
+                    var accessToken = new Tokens({
+                        accessToken: token,
+                        accessTokenExpiresOn: process.env.TEMP_TOKEN_EXPIRE_TIME || 30 * 24 * 60 * 60,
+                        clientId: req.clientId,
+                        refreshToken: tkn.accessToken,
+                        accessTokenExpiresOn: undefined,
+                        userId: req.body.phoneNumber,
+                        deviceToken : tkn.deviceToken,
+                        authenticated : true
+                      });
+                      accessToken.save((err, data)=>{
                         if (err)
                         {
                             res.status(500).send({"success" : false,  error : "Unable to generate token"});
@@ -153,7 +188,7 @@ exports.verifycode = [
                 }
                 else
                 {
-                    res.status(404).send({"success" : false,  error : "Invalid code"});
+                    res.status(403).send({"success" : false,  error : "Invalid code"});
                 }
             });
         }
@@ -161,12 +196,6 @@ exports.verifycode = [
 ]
 
 exports.login = [
-    //Validate fields
-//  body('username', "UserName must not be empty").isString().withMessage('Invalid username'),
-//  body('password', "Password must not be empty").isLength({min : 8}).withMessage('Password length must be at least 8 charachters').isAlphanumeric().withMessage('Password must contain charachters and numbers'),
-//  //Sanitize fields
-//  sanitizeBody('username').trim().escape(),
-//  sanitizeBody('password').trim().escape(),
  (req, res, next) =>{
  console.log(req.body);
  var errors = validationResult(req);

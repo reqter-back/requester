@@ -24,6 +24,7 @@ function loadHeaders(req, res, next) {
   next();
 }
 function verifyToken(req, res, next) {
+  console.log("started");
   var token = req.headers["authorization"];
   if (token === null || token == undefined) {
     token = req.headers["x-access-token"];
@@ -36,38 +37,58 @@ function verifyToken(req, res, next) {
   if (!token || token == null)
     return res.status(403).send({ auth: false, message: "No token provided." });
   token = token.replace("Bearer ", "");
-
-  jwt.verify(token, config.secret, function(err, decoded) {
-    if (err)
-      return res
-        .status(401)
-        .send({ auth: false, message: "Failed to authenticate token." });
-    // if everything good, save to request for use in other routes
-    console.log("auth : " + JSON.stringify(decoded));
-    Apps.findOne({ clientId: decoded.clientId }).exec((err, app) => {
-      var result = {
-        success: false,
-        message: undefined,
-        error: "Invalid code"
-      };
-      if (err) {
-        result.error = err;
-        res.status(400).send(result);
-        return;
-      }
-      if (app) {
-        console.log("spaceId is : " + app.spaceId);
-        req.spaceId = app.spaceId;
-        req.clientId = app.clientId;
-        next();
-      } else {
-        result.error = "Invalid client";
-        res.status(500).send(result);
-      }
-    });
+  Tokens.findOne({ accessToken: token }).exec(function(err, tkn) {
+    var result = {
+      success: false,
+      message: undefined,
+      error: "Failed to authenticate token.Invalid token"
+    };
+    if (err) {
+      res.status(403).send(result);
+      return;
+    }
+    if (tkn) {
+      console.log(tkn);
+      jwt.verify(token, config.secret, function(err, decoded) {
+        if (err)
+          return res
+            .status(401)
+            .send({ auth: false, message: "Failed to authenticate token." });
+        // if everything good, save to request for use in other routes
+        console.log("auth : " + JSON.stringify(decoded));
+        req.userId = tkn.userId;
+        Apps.findOne({ clientId: decoded.clientId }).exec((err, app) => {
+          var result = {
+            success: false,
+            message: undefined,
+            error: "Invalid code"
+          };
+          if (err) {
+            result.error = err;
+            res.status(400).send(result);
+            return;
+          }
+          if (app) {
+            console.log("spaceId is : " + app.spaceId);
+            req.app = app;
+            req.userId = tkn.userId;
+            req.spaceId = app.spaceId;
+            req.clientId = app.clientId;
+            next();
+          } else {
+            result.error = "Invalid client";
+            res.status(500).send(result);
+          }
+        });
+      });
+    } else {
+      res.status(403).send(result);
+      return;
+    }
   });
 }
 
+function logout(req, res, next) {}
 exports.loadHeaders = loadHeaders;
 exports.verifyToken = verifyToken;
 exports.gettoken = [
@@ -115,3 +136,5 @@ exports.gettoken = [
     });
   }
 ];
+
+exports.logout = logout;

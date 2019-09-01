@@ -1,5 +1,6 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var controller = require('../controllers/auth');
+var controller = require("../controllers/auth");
+router.delete("/logout", controller.loadHeaders, controller.logout);
 router.post("/token", controller.loadHeaders, controller.gettoken);
 module.exports = router;
