@@ -55,7 +55,7 @@ exports.userRequests = [
     var q = req.query || {};
     if (q) {
       q["sys.issuer"] = req.userId;
-      q["sys.spaceId"] = req.spaceId.replace('"', "");
+      q["sys.spaceId"] = req.spaceId.toString();
     }
     console.log(q);
     var apiRoot =
@@ -64,7 +64,7 @@ exports.userRequests = [
       url: "/contents/query",
       baseURL: apiRoot,
       method: "get",
-      params: req.query,
+      params: q,
       headers: {
         authorization: req.headers.authorization,
         clientid: req.spaceId.toString()
