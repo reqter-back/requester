@@ -55,7 +55,7 @@ exports.userRequests = [
     var q = req.query || {};
     if (q) {
       q["sys.issuer"] = req.userId;
-      q["sys.spaceId"] = req.spaceId;
+      q["sys.spaceId"] = req.spaceId.replace('"', "");
     }
     console.log(q);
     var apiRoot =
