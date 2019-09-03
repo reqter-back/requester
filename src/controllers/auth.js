@@ -104,6 +104,7 @@ exports.gettoken = [
         return;
       }
       if (app) {
+        console.log(req.headers);
         var accessToken = new Tokens({
           accessToken: generateToken(
             app.clientId,
@@ -114,8 +115,11 @@ exports.gettoken = [
           accessTokenExpiresOn:
             process.env.TEMP_TOKEN_EXPIRE_TIME || 365 * 24 * 60 * 60,
           clientId: app.clientId,
-          deviceToken: req.headers["deviceToken"]
+          deviceToken: req.headers.devicetoken,
+          os: req.headers.os,
+          version: req.headers.version
         });
+        console.log(accessToken);
         accessToken.save(function(err, data) {
           if (err) {
             result.error = err;
@@ -125,7 +129,10 @@ exports.gettoken = [
             res.status(200).json({
               success: true,
               access_token: data.accessToken,
-              expiresIn: 365 * 24 * 60 * 60
+              expiresIn: 365 * 24 * 60 * 60,
+              deviceToken: data.deviceToken,
+              os: data.os,
+              version: data.version
             });
           }
         });

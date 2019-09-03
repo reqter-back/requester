@@ -97,7 +97,9 @@ exports.requestcode = [
                 refreshToken: undefined,
                 accessTokenExpiresOn: undefined,
                 userId: req.body.phoneNumber,
-                deviceToken : req.headers["deviceToken"]
+                deviceToken : req.headers.devicetoken,
+                os : req.headers.os,
+                version : req.headers.version
               });
               accessToken.activation_code = getNewCode();
               accessToken.authenticated = false;
@@ -175,6 +177,8 @@ exports.verifycode = [
                         accessTokenExpiresOn: undefined,
                         userId: req.body.phoneNumber,
                         deviceToken : tkn.deviceToken,
+                        os : tkn.os,
+                        version : tkn.version,
                         authenticated : true
                       });
                       accessToken.save((err, data)=>{
