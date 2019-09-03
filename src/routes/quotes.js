@@ -5,6 +5,7 @@ var auth = require("../controllers/auth");
 
 router.put("/accept/:id", auth.verifyToken, controller.customerAccpet);
 router.put("/reject/:id", auth.verifyToken, controller.customerReject);
+router.put("/cancel/:id", auth.verifyToken, controller.cancel);
 router.put("/close/:id", auth.verifyToken, controller.close);
 router.post("/issueOffer", auth.verifyToken, controller.issueOffer);
 router.get("/alloffers", auth.verifyToken, controller.myoffers);
