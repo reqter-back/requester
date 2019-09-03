@@ -152,18 +152,18 @@ exports.acceptedoffers = [
 
 exports.myoffers = [
   (req, res, next) => {
+    var q = req.query || {};
+    if (q) {
+      q["sys.issuer"] = req.userId;
+    }
+    console.log(q);
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
     var config = {
-      url: "/graphql",
+      url: "/contents/search",
       baseURL: apiRoot,
       method: "get",
-      params: {
-        query:
-          '{contents(contentType : "' +
-          req.params.contentType +
-          '"){ fields, _id, sys{issuer issueDate} }  }'
-      },
+      params: req.query,
       headers: {
         authorization: req.headers.authorization,
         clientid: req.spaceId.toString()
@@ -172,9 +172,7 @@ exports.myoffers = [
     console.log(config);
     axios(config)
       .then(function(response) {
-        if (response.data && response.data.data && response.data.data.contents)
-          res.send(response.data.data.contents);
-        else res.send(response.data);
+        res.send(response.data);
       })
       .catch(function(error) {
         if (error.response) {
