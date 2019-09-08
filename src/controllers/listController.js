@@ -62,7 +62,7 @@ exports.querycontents = [
         query:
           '{contents(contentType : "' +
           req.query.contentTypes +
-          '" , status:"published"){ fields, _id, sys{issuer issueDate} }  }'
+          '" , status:"published"){ fields, _id, sys{issuer issueDate}، contentType }  }'
       },
       headers: {
         authorization: req.headers.authorization,
