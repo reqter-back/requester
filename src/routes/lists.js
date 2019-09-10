@@ -43,4 +43,5 @@ HTTP/1.1 500 Internal server error
  */
 router.get("/:contentType", auth.verifyToken, controller.getcontentsbytype);
 router.get("/get/query", auth.verifyToken, controller.querycontents);
+router.get("/get/fullquery", auth.verifyToken, controller.fullquery);
 module.exports = router;
