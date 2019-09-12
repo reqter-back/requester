@@ -54,6 +54,7 @@ exports.getcontentsbytype = [
       q["sys.spaceId"] = req.spaceId.toString();
       q["status"] = "published";
       q["contentType"] = req.params.contentType;
+      q["loadrelations"] = false;
     }
     console.log(q);
     var apiRoot =
