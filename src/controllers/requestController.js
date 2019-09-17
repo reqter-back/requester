@@ -118,7 +118,7 @@ exports.getRequestsOffers = [
   (req, res, next) => {
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
-
+    req.query["status"] = "published";
     var config = {
       url: "/contents/search",
       baseURL: apiRoot,
