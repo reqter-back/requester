@@ -3,13 +3,19 @@ const async = require("async");
 const broker = require("./serviceBroker");
 exports.myRequests = [
   (req, res, next) => {
+    var q = req.query || {};
+    if (q) {
+      q["sys.issuer"] = req.userId;
+      q["sys.spaceId"] = req.spaceId.toString();
+    }
+    console.log(q);
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
     var config = {
-      url: "/contents/search",
+      url: "/contents/query",
       baseURL: apiRoot,
       method: "get",
-      params: req.query,
+      params: q,
       headers: {
         authorization: req.headers.authorization,
         clientid: req.spaceId.toString()
