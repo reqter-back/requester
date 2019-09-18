@@ -261,7 +261,7 @@ exports.openApplication = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
@@ -283,7 +283,7 @@ exports.cancelApplication = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
@@ -305,7 +305,7 @@ exports.rejectApplication = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));

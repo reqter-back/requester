@@ -10,7 +10,7 @@ exports.customerAccpet = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
@@ -32,7 +32,7 @@ exports.customerReject = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
@@ -276,7 +276,7 @@ exports.close = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
@@ -298,7 +298,7 @@ exports.cancel = [
     broker
       .sendRPCMessage(
         { spaceId: req.spaceid, userId: req.userId, body: req.body },
-        "updatecontent"
+        "partialupdatecontent"
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
