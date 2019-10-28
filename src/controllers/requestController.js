@@ -114,6 +114,7 @@ exports.submit = [
             return res.status(500).json(obj);
           }
         } else {
+          //do mach making and submit to partners
           res.status(201).json(obj.data);
         }
       });
@@ -271,7 +272,54 @@ exports.openApplication = [
             res.status(404).json(obj);
           }
         } else {
-          res.status(200).json(obj.data);
+          console.log(req);
+          var apiRoot =
+            process.env.CONTENT_DELIVERY_API ||
+            "https://app-dpanel.herokuapp.com";
+          var config = {
+            url: "/contents/query",
+            baseURL: apiRoot,
+            method: "get",
+            params: {
+              _id: obj.data.fields.request
+                ? obj.data.fields.request
+                : obj.data.fields.requestid
+            },
+            headers: {
+              authorization: req.headers.authorization,
+              clientid: req.spaceId.toString()
+            }
+          };
+          console.log(config);
+          axios(config)
+            .then(function(response) {
+              if (response.data && response.data.length > 0)
+                res.send(response.data[0]);
+              else res.status(204).send();
+            })
+            .catch(function(error) {
+              if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+                res.status(error.response.status).send(error.response.data);
+              } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+                res.status(204).send("No response from server");
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error", error.message);
+                res.status(500).send(error.message);
+              }
+              console.log(error.config);
+              res.status(400).send(error.config);
+            });
+          //res.status(200).json(obj.data);
         }
       });
   }

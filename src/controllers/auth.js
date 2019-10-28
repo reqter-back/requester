@@ -18,6 +18,7 @@ var generateToken = function(client, authenticated, expireTime, scope) {
 };
 
 function loadHeaders(req, res, next) {
+  if (req.headers.spaceid) req.spaceid = req.headers.spaceid;
   if (req.headers.clientid) req.clientId = req.headers.clientid;
   else
     return res.status(400).send({ auth: false, message: "Invalid client id." });
