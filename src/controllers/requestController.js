@@ -185,6 +185,18 @@ exports.getNewapplications = [
     console.log(config);
     axios(config)
       .then(function(response) {
+        if (response.data && response.data.length > 0) {
+          for (i = 0; i <= response.data.length; i++) {
+            if (response.data[i]) {
+              response.data[i].fields.requestid.phonenumber = undefined;
+              response.data[i].fields.requestid.fullname = undefined;
+              response.data[i].fields.requestid.email = undefined;
+              response.data[i].fields.requestid.resume = undefined;
+              response.data[i].fields.requestid.avatar = undefined;
+              response.data[i].fields.partnerid = undefined;
+            }
+          }
+        }
         res.send(response.data);
       })
       .catch(function(error) {
