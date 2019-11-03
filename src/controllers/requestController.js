@@ -74,7 +74,13 @@ exports.userRequests = [
     console.log(config);
     axios(config)
       .then(function(response) {
-        res.send(response.data);
+        var arr = [];
+        if (response.data && response.data.length > 0) {
+          for (i = 0; i < response.data.length; i++) {
+            if (response.data[i].fields.product) arr.push(response.data[i]);
+          }
+        } else arr = response.data;
+        res.send(arr);
       })
       .catch(function(error) {
         if (error.response) {
