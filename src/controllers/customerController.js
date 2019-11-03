@@ -181,6 +181,9 @@ exports.verifycode = [
                         version : tkn.version,
                         authenticated : true
                       });
+                      tkn.remove(()=>{
+                        console.log("Token removed : " + tkn);
+                      });
                       accessToken.save((err, data)=>{
                         if (err)
                         {
