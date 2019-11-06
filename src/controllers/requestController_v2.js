@@ -196,6 +196,8 @@ exports.submit = [
           amount: req.body.fields.amount,
           amortization: req.body.fields.amortization,
           loantype: req.body.fields.loantype,
+          isgooddealler: true,
+          hasreturned: false,
           guarantee: req.body.fields.guarantee,
           priority: req.body.fields.priority
         };
