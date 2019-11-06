@@ -136,7 +136,7 @@ exports.submit = [
           method: "get",
           params: {
             contentType: contacttype,
-            "fields.phonenumber": req.body.fields.phoneNumber,
+            "fields.phonenumber": req.body.fields.contact.phoneNumber,
             "sys.spaceId": req.spaceId.toString()
           },
           headers: {
@@ -154,14 +154,7 @@ exports.submit = [
             } else {
               //create new contact
 
-              var fields = {
-                phonenumber: req.body.fields.phoneNumber,
-                name: req.body.fields.fullname,
-                email: req.body.fields.email,
-                country: req.body.fields.country,
-                city: req.body.fields.city,
-                location: req.body.fields.location
-              };
+              var fields = req.body.fields.contact;
               var data = {};
               data.fields = fields;
               data["contentType"] = contacttype;
@@ -191,17 +184,9 @@ exports.submit = [
           });
       },
       details: function(callback) {
-        var fields = {
-          name: req.body.fields.name,
-          amount: req.body.fields.amount,
-          amortization: req.body.fields.amortization,
-          loantype: req.body.fields.loantype,
-          isgooddealler: true,
-          hasreturned: false,
-          guarantee: req.body.fields.guarantee,
-          priority: req.body.fields.priority
-        };
+        var fields = req.body.fields.details;
         var data = {};
+        fields.name = req.body.fields.name;
         data.fields = fields;
         data["contentType"] = req.body.contentType;
         broker
@@ -234,15 +219,19 @@ exports.submit = [
             src: req.body.fields.src
           };
           var ctype = "5dc0429a93259a00177dacd4";
+          var stage = "5d3fc2d57029a500172c5c3c";
           switch (req.spaceId.toString()) {
             case "5d26e793375e9b001745e84d":
               ctype = "5dc0429a93259a00177dacd4";
+              stage = "5d3fc2d57029a500172c5c3c";
               break;
             case "5cf3883dcce4de00174d48cf":
               ctype = "";
+              stage = "";
               break;
           }
           data.contentType = ctype;
+          fields.stage = stage;
           data.fields = fields;
           broker
             .sendRPCMessage(
