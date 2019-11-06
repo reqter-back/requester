@@ -108,22 +108,165 @@ exports.userRequests = [
 ];
 exports.submit = [
   (req, res, next) => {
-    broker
-      .sendRPCMessage(
-        { body: req.body, userId: req.userId, spaceId: req.spaceId },
-        "submitcontent"
-      )
-      .then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) {
-            return res.status(500).json(obj);
+    var contacttype = "5dc272d251b8310017540c51",
+      detailtype = "";
+    switch (req.spaceId.toString()) {
+      case "5d26e793375e9b001745e84d":
+        contacttype = "5dc272d251b8310017540c51";
+        break;
+      case "5cf3883dcce4de00174d48cf":
+        contacttype = "";
+        break;
+    }
+    var details = req.body.details;
+    var contact = req.body.contact;
+    req.body.details = undefined;
+    req.body.contact = undefined;
+    var space = req.spaceId.toString();
+    var output = {};
+    var tasks = {
+      contact: function(callback) {
+        ///First query to get existing contact
+        var apiRoot =
+          process.env.CONTENT_DELIVERY_API ||
+          "https://app-dpanel.herokuapp.com";
+        var config = {
+          url: "/contents/query",
+          baseURL: apiRoot,
+          method: "get",
+          params: {
+            contentType: contacttype,
+            "fields.phonenumber": req.body.fields.phoneNumber,
+            "sys.spaceId": req.spaceId.toString()
+          },
+          headers: {
+            authorization: req.headers.authorization,
+            clientid: req.spaceId.toString()
           }
-        } else {
-          //do mach making and submit to partners
-          res.status(201).json(obj.data);
+        };
+        console.log(config);
+        axios(config)
+          .then(function(response) {
+            if (response.data && response.data.length > 0) {
+              //contact exists
+              output.contact = response.data[0];
+              callback(undefined, response.data[0]);
+            } else {
+              //create new contact
+
+              var fields = {
+                phonenumber: req.body.fields.phoneNumber,
+                name: req.body.fields.fullname,
+                email: req.body.fields.email,
+                country: req.body.fields.country,
+                city: req.body.fields.city,
+                location: req.body.fields.location
+              };
+              var data = {};
+              data.fields = fields;
+              data["contentType"] = contacttype;
+              broker
+                .sendRPCMessage(
+                  { body: data, userId: req.userId, spaceId: req.spaceId },
+                  "addcontent"
+                )
+                .then(result => {
+                  var obj = JSON.parse(result.toString("utf8"));
+                  if (!obj.success) {
+                    if (obj.error) {
+                      output.contact = undefined;
+                      callback(obj, undefined);
+                    }
+                  } else {
+                    //do mach making and submit to partners
+                    output.contact = obj.data;
+                    callback(undefined, obj.data);
+                  }
+                });
+            }
+          })
+          .catch(function(error) {
+            output.contact = undefined;
+            callback(error, undefined);
+          });
+      },
+      details: function(callback) {
+        var fields = {
+          name: req.body.fields.name,
+          amount: req.body.fields.amount,
+          amortization: req.body.fields.amortization,
+          loanType: req.body.fields.loanType,
+          guarantee: req.body.fields.guarantee,
+          priority: req.body.fields.priority
+        };
+        var data = {};
+        data.fields = fields;
+        data["contentType"] = req.body.contentType;
+        broker
+          .sendRPCMessage(
+            { body: data, userId: req.userId, spaceId: req.spaceId },
+            "addcontent"
+          )
+          .then(result => {
+            var obj = JSON.parse(result.toString("utf8"));
+            if (!obj.success) {
+              if (obj.error) {
+                output.details = undefined;
+                callback(obj);
+              }
+            } else {
+              //do mach making and submit to partners
+              output.details = obj.data;
+              callback(undefined, obj.data);
+            }
+          });
+      },
+      request: function(callback) {
+        var data = {};
+        if (output.details && output.contact) {
+          var fields = {
+            name: req.body.fields.name,
+            contact: output.contact._id,
+            details: output.details._id,
+            stage: req.body.fields.stage,
+            src: req.body.fields.src
+          };
+          var ctype = "5dc0429a93259a00177dacd4";
+          switch (req.spaceId.toString()) {
+            case "5d26e793375e9b001745e84d":
+              ctype = "5dc0429a93259a00177dacd4";
+              break;
+            case "5cf3883dcce4de00174d48cf":
+              ctype = "";
+              break;
+          }
+          data.contentType = ctype;
+          data.fields = fields;
+          broker
+            .sendRPCMessage(
+              { body: data, userId: req.userId, spaceId: req.spaceId },
+              "addcontent"
+            )
+            .then(result => {
+              var obj = JSON.parse(result.toString("utf8"));
+              if (!obj.success) {
+                if (obj.error) {
+                  callback(obj.error);
+                }
+              } else {
+                //do mach making and submit to partners
+                output.request = obj.data;
+                callback(undefined, obj.data);
+              }
+            });
         }
-      });
+      }
+    };
+    async.series(tasks, (err, results) => {
+      if (err) {
+        res.status(400).send(err);
+      } else res.status(201).send(output.request);
+    });
   }
 ];
 
