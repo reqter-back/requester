@@ -151,9 +151,9 @@ exports.acceptedoffers = [
 exports.myoffers = [
   (req, res, next) => {
     var q = req.query || {};
-    if (q) {
-      q["sys.issuer"] = req.userId;
-    }
+    // if (q) {
+    //   q["sys.issuer"] = req.userId;
+    // }
     console.log(q);
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
