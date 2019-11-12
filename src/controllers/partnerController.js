@@ -1,7 +1,10 @@
 const { body, validationResult } = require("express-validator/check");
 const { sanitizeBody } = require("express-validator/filter");
 const culture = process.env.CULTURE | "fa-IR";
-const Partners = require("../models/client");
+const broker = require("./serviceBroker");
+const Tokens = require("../models/token");
+const jwt = require("jsonwebtoken");
+const config = require("../config");
 
 var sendVerifyCode = function(phoneNumber, code, deviceToken, clientId) {
   if (process.env.NODE_ENV == "production") {
@@ -106,7 +109,8 @@ exports.requestcode = [
         userId: req.body.phoneNumber,
         deviceToken: req.headers.devicetoken,
         os: req.headers.os,
-        version: req.headers.version
+        version: req.headers.version,
+        role: "partner"
       });
       accessToken.activation_code = getNewCode();
       accessToken.authenticated = false;
@@ -227,6 +231,9 @@ exports.verifycode = [
             version: tkn.version,
             authenticated: true
           });
+          tkn.remove(() => {
+            console.log("Token removed : " + tkn);
+          });
           accessToken.save((err, data) => {
             if (err) {
               res
@@ -248,219 +255,36 @@ exports.verifycode = [
   }
 ];
 
-exports.login = [
-  body("username", "UserName is required")
-    .not()
-    .isEmpty()
-    .withMessage("UserName is required"),
-  body("password", "Password is required")
-    .not()
-    .isEmpty()
-    .withMessage("Password is required")
-    .isNumeric()
-    .isLength({ min: 4, max: 4 })
-    .withMessage("Password is invalid"),
-  //Sanitize fields
-  sanitizeBody("password")
-    .trim()
-    .escape(),
-  sanitizeBody("username")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    console.log(req.body);
-
-    var q = {};
-    if (q) {
-      q["fields.name"] = req.body.username;
-      q["fields.password"] = req.body.password;
-      q["contentType"] = req.headers.contentType;
-      q["sys.spaceId"] = req.spaceId.toString();
-    }
-    console.log(q);
-    var apiRoot =
-      process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
-    var config = {
-      url: "/contents/query",
-      baseURL: apiRoot,
-      method: "get",
-      params: q,
-      headers: {
-        authorization: req.headers.authorization,
-        clientid: req.spaceId.toString()
-      }
-    };
-    console.log(config);
-    axios(config)
-      .then(function(response) {
-        var accessToken = new Tokens({
-          accessToken: generateToken(
-            req.clientId,
-            false,
-            5 * 60 * 60,
-            "verify"
-          ),
-          accessTokenExpiresOn:
-            process.env.TEMP_TOKEN_EXPIRE_TIME || 5 * 60 * 60,
-          clientId: req.clientId,
-          refreshToken: undefined,
-          accessTokenExpiresOn: undefined,
-          userId: response._id,
-          deviceToken: req.headers.devicetoken,
-          os: req.headers.os,
-          version: req.headers.version,
-          authenticated: true
-        });
-        accessToken.save((err, data) => {
-          if (err) {
-            res
-              .status(500)
-              .send({ success: false, error: "Unable to generate token" });
-            return;
-          }
-          res.send({
-            success: true,
-            access_token: token,
-            userInfo: response.data,
-            expiresIn: 30 * 24 * 60 * 60
-          });
-        });
-      })
-      .catch(function(error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-          res.status(error.response.status).send(error.response.data);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-          res.status(204).send("No response from server");
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-          res.status(500).send(error.message);
-        }
-        console.log(error.config);
-        res.status(400).send(error.config);
-      });
-  }
-];
-
-exports.register = [
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      console.log("add user started.");
-      broker.sendRPCMessage(req.body, "register").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) {
-            return res.status(500).json(obj);
-          }
-        } else {
-          res.status(201).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.changecity = [
+exports.updateprofile = [
   body("id", "Id must not be empty"),
-  body("citycode", "City code must not be empty")
-    .isNumeric()
-    .withMessage("Invalid city code."),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  sanitizeBody("citycode")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "changecity").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.changenumber = [
-  body("id", "Id must not be empty"),
-  body("phoneNumber", "Phone number must not be empty"),
-  body("code", "code must not be empty"),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  sanitizeBody("phoneNumber")
-    .trim()
-    .escape(),
-  sanitizeBody("code")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "changenumber").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.changeavatar = [
-  body("id", "Id must not be empty"),
-  //Sanitize fields
+  // Validate fields
+  // body("fields.name", "Name is required")
+  //   .not()
+  //   .isEmpty()
+  //   .withMessage("Name is required"),
+  // body("fields.phonenumber", "Phone number is invalid")
+  //   .isMobilePhone("fa-IR")
+  //   .withMessage("Phone number is invalid"),
+  // body("fields.email", "Email is required")
+  //   .not()
+  //   .isEmpty()
+  //   .withMessage("fields.email", "Email is invalid"),
+  // body("fields.city", "City is required"),
+  // //Sanitize fields
+  // sanitizeBody("fields.phonenumber")
+  //   .trim()
+  //   .escape(),
+  // sanitizeBody("fields.name")
+  //   .trim()
+  //   .escape(),
+  // sanitizeBody("fields.email")
+  //   .trim()
+  //   .escape(),
+  // //Sanitize fields
   sanitizeBody("id")
     .trim()
     .escape(),
   (req, res, next) => {
-    console.log(JSON.stringify(req.file));
-    if (req.file === undefined || req.file == null) {
-      //There is no avatar in the request
-      res
-        .status(400)
-        .json({ success: false, error: "Avatar must not be null" });
-      return;
-    }
     var errors = validationResult(req);
     if (!errors.isEmpty()) {
       //There are errors. send error result
@@ -468,7 +292,14 @@ exports.changeavatar = [
       return;
     } else {
       broker
-        .sendRPCMessage({ id: req.body.id, avatar: req.file }, "changeavatar")
+        .sendRPCMessage(
+          {
+            spaceId: req.spaceId.toString(),
+            userId: req.userId,
+            body: req.body
+          },
+          "partialupdatecontent"
+        )
         .then(result => {
           var obj = JSON.parse(result.toString("utf8"));
           if (!obj.success) {
@@ -478,184 +309,14 @@ exports.changeavatar = [
               res.status(404).json(obj);
             }
           } else {
-            res.status(200).json(wrapUser(obj.data));
+            res.status(200).json(obj.data);
           }
         });
     }
   }
 ];
 
-exports.updateprofile = [
-  body("id", "Id must not be empty"),
-  body("first_name", "First name must not be empty"),
-  body("last_name", "Last name must not be empty"),
-  body("address", "Address must not be empty"),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  sanitizeBody("first_name")
-    .trim()
-    .escape(),
-  sanitizeBody("last_name")
-    .trim()
-    .escape(),
-  sanitizeBody("address")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "updateprofile").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.changelanguage = [
-  body("id", "Id must not be empty"),
-  body("language", "Language must not be empty"),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  sanitizeBody("language")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "changelanguage").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.changenotification = [
-  body("id", "Id must not be empty"),
-  body("notification", "notify must not be empty"),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "changenotification").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.deleteaccount = [
-  body("id", "Id must not be empty"),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "deleteaccount").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json({
-            success: true,
-            message:
-              "You successfully deleted your account. You will no longer have access to your account"
-          });
-        }
-      });
-    }
-  }
-];
-
-exports.locationchanged = [
-  body("id", "Id must not be empty"),
-  body("location", "Location must not be empty"),
-  //Sanitize fields
-  sanitizeBody("id")
-    .trim()
-    .escape(),
-  sanitizeBody("location")
-    .trim()
-    .escape(),
-  (req, res, next) => {
-    var errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //There are errors. send error result
-      res.status(400).json({ success: false, error: errors });
-      return;
-    } else {
-      broker.sendRPCMessage(req.body, "locationchanged").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "invalid id";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
-    }
-  }
-];
-
-exports.getuserinfo = [
+exports.getinfo = [
   (req, res, next) => {
     var errors = validationResult(req);
     if (!errors.isEmpty()) {

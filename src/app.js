@@ -20,7 +20,7 @@ var quotes = require("./routes/quotes");
 var quotes_v2 = require("./routes/quotes_v2");
 var request = require("./routes/requests");
 var request_v2 = require("./routes/requests_v2");
-//var partner = require("./routes/partners");
+var partner = require("./routes/partners");
 //var products = require("./routes/products");
 
 app.use(logger("dev"));
@@ -35,6 +35,6 @@ app.use("/api/v2/requests", request_v2);
 app.use("/api/v1/lists", lists);
 app.use("/api/v1/auth", auth);
 //app.use("/products", products);
-//app.use("/partners", partner);
+app.use("/api/v1/partners", partner);
 app.use("/docs", express.static("./apidoc"));
 module.exports = app;

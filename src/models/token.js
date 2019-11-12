@@ -22,6 +22,7 @@ module.exports = mongoose.model(
     activation_code: { type: Number },
     deviceToken: { type: String },
     os: { type: String },
-    version: { type: String }
+    version: { type: String },
+    token: { type: String }
   })
 );
