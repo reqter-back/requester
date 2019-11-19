@@ -191,6 +191,7 @@ exports.getNewapplications = [
     console.log(config);
     axios(config)
       .then(function(response) {
+        console.log(response.data);
         var output = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
@@ -209,8 +210,11 @@ exports.getNewapplications = [
               response.data[i].fields.requestid.resume = undefined;
               response.data[i].fields.requestid.avatar = undefined;
               response.data[i].fields.partnerid = undefined;
-            }
-            output.push(response.data[i]);
+              output.push(response.data[i]);
+            } else
+              console.log(
+                response.data[i].fields.requestid.phonenumber.toString()
+              );
           }
         }
         res.send(output);
@@ -270,7 +274,7 @@ exports.getOpenedApplications = [
                 "+989125138218"
             ) {
               output.push(response.data[i]);
-            }
+            } else response.data[i].fields.requestid.phonenumber.toString();
           }
         }
         res.send(output);
