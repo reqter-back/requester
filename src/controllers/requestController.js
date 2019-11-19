@@ -214,7 +214,7 @@ exports.getNewapplications = [
               output.push(response.data[i]);
             } else
               console.log(
-                response.data[i].fields.requestid.phonenumber.toString()
+                response.data[i].fields.requestid.fields.phonenumber.toString()
               );
           }
         }
