@@ -197,6 +197,8 @@ exports.getNewapplications = [
           for (i = 0; i <= response.data.length; i++) {
             if (
               response.data[i] &&
+              response.data[i].fields &&
+              response.data[i].fields.requestid &&
               response.data[i].fields.requestid.fields.phonenumber &&
               response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989197682386" &&
@@ -212,10 +214,7 @@ exports.getNewapplications = [
               response.data[i].fields.requestid.fields.avatar = undefined;
               response.data[i].fields.partnerid = undefined;
               output.push(response.data[i]);
-            } else
-              console.log(
-                response.data[i].fields.requestid.fields.phonenumber.toString()
-              );
+            }
           }
         }
         res.send(output);
@@ -267,6 +266,8 @@ exports.getOpenedApplications = [
           for (i = 0; i <= response.data.length; i++) {
             if (
               response.data[i] &&
+              response.data[i].fields &&
+              response.data[i].fields.requestid &&
               response.data[i].fields.requestid.fields.phonenumber &&
               response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989197682386" &&
