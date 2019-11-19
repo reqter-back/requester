@@ -200,12 +200,19 @@ exports.getNewapplications = [
               response.data[i].fields &&
               response.data[i].fields.requestid &&
               response.data[i].fields.requestid.fields.phonenumber &&
-              response.data[i].fields.requestid.fields.phonenumber.toString() !=
+              ((response.data[
+                i
+              ].fields.requestid.fields.phonenumber.toString() !=
                 "+989197682386" &&
-              response.data[i].fields.requestid.fields.phonenumber.toString() !=
-                "+989333229291" &&
-              response.data[i].fields.requestid.fields.phonenumber.toString() !=
-                "+989125138218"
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989333229291" &&
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989125138218") ||
+                response.data[i].fields.partnerid.fields.isdevacc)
             ) {
               response.data[i].fields.requestid.fields.phonenumber = undefined;
               response.data[i].fields.requestid.fields.fullname = undefined;
@@ -269,12 +276,19 @@ exports.getOpenedApplications = [
               response.data[i].fields &&
               response.data[i].fields.requestid &&
               response.data[i].fields.requestid.fields.phonenumber &&
-              response.data[i].fields.requestid.fields.phonenumber.toString() !=
+              ((response.data[
+                i
+              ].fields.requestid.fields.phonenumber.toString() !=
                 "+989197682386" &&
-              response.data[i].fields.requestid.fields.phonenumber.toString() !=
-                "+989333229291" &&
-              response.data[i].fields.requestid.fields.phonenumber.toString() !=
-                "+989125138218"
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989333229291" &&
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989125138218") ||
+                response.data[i].fields.partnerid.fields.isdevacc)
             ) {
               output.push(response.data[i]);
             }
