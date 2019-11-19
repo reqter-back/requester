@@ -197,19 +197,19 @@ exports.getNewapplications = [
           for (i = 0; i <= response.data.length; i++) {
             if (
               response.data[i] &&
-              response.data[i].fields.requestid.phonenumber &&
-              response.data[i].fields.requestid.phonenumber.toString() !=
+              response.data[i].fields.requestid.fields.phonenumber &&
+              response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989197682386" &&
-              response.data[i].fields.requestid.phonenumber.toString() !=
+              response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989333229291" &&
-              response.data[i].fields.requestid.phonenumber.toString() !=
+              response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989125138218"
             ) {
-              response.data[i].fields.requestid.phonenumber = undefined;
-              response.data[i].fields.requestid.fullname = undefined;
-              response.data[i].fields.requestid.email = undefined;
-              response.data[i].fields.requestid.resume = undefined;
-              response.data[i].fields.requestid.avatar = undefined;
+              response.data[i].fields.requestid.fields.phonenumber = undefined;
+              response.data[i].fields.requestid.fields.fullname = undefined;
+              response.data[i].fields.requestid.fields.email = undefined;
+              response.data[i].fields.requestid.fields.resume = undefined;
+              response.data[i].fields.requestid.fields.avatar = undefined;
               response.data[i].fields.partnerid = undefined;
               output.push(response.data[i]);
             } else
@@ -267,16 +267,16 @@ exports.getOpenedApplications = [
           for (i = 0; i <= response.data.length; i++) {
             if (
               response.data[i] &&
-              response.data[i].fields.requestid.phonenumber &&
-              response.data[i].fields.requestid.phonenumber.toString() !=
+              response.data[i].fields.requestid.fields.phonenumber &&
+              response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989197682386" &&
-              response.data[i].fields.requestid.phonenumber.toString() !=
+              response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989333229291" &&
-              response.data[i].fields.requestid.phonenumber.toString() !=
+              response.data[i].fields.requestid.fields.phonenumber.toString() !=
                 "+989125138218"
             ) {
               output.push(response.data[i]);
-            } else response.data[i].fields.requestid.phonenumber.toString();
+            }
           }
         }
         res.send(output);
