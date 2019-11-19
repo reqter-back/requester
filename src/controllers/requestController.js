@@ -191,7 +191,7 @@ exports.getNewapplications = [
     console.log(config);
     axios(config)
       .then(function(response) {
-        console.log(response.data);
+        console.log(JSON.stringify(response.data));
         var output = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
