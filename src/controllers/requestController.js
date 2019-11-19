@@ -191,19 +191,28 @@ exports.getNewapplications = [
     console.log(config);
     axios(config)
       .then(function(response) {
+        var output = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
-            if (response.data[i]) {
-              response.data[i].fields.requestid.phonenumber = undefined;
-              response.data[i].fields.requestid.fullname = undefined;
-              response.data[i].fields.requestid.email = undefined;
-              response.data[i].fields.requestid.resume = undefined;
-              response.data[i].fields.requestid.avatar = undefined;
-              response.data[i].fields.partnerid = undefined;
+            if (
+              (!response.data[i].fields.requestid.phonenumber in
+                ["+989197682386"],
+              "+989333229291",
+              "+989125138218")
+            ) {
+              output.push(response.data[i]);
+              if (response.data[i]) {
+                response.data[i].fields.requestid.phonenumber = undefined;
+                response.data[i].fields.requestid.fullname = undefined;
+                response.data[i].fields.requestid.email = undefined;
+                response.data[i].fields.requestid.resume = undefined;
+                response.data[i].fields.requestid.avatar = undefined;
+                response.data[i].fields.partnerid = undefined;
+              }
             }
           }
         }
-        res.send(response.data);
+        res.send(output);
       })
       .catch(function(error) {
         if (error.response) {
@@ -247,7 +256,20 @@ exports.getOpenedApplications = [
     console.log(config);
     axios(config)
       .then(function(response) {
-        res.send(response.data);
+        var output = [];
+        if (response.data && response.data.length > 0) {
+          for (i = 0; i <= response.data.length; i++) {
+            if (
+              (!response.data[i].fields.requestid.phonenumber in
+                ["+989197682386"],
+              "+989333229291",
+              "+989125138218")
+            ) {
+              output.push(response.data[i]);
+            }
+          }
+        }
+        res.send(output);
       })
       .catch(function(error) {
         if (error.response) {
