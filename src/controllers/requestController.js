@@ -194,12 +194,12 @@ exports.getNewapplications = [
         var output = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
-            if (
-              (!response.data[i].fields.requestid.phonenumber in
-                ["+989197682386"],
+            if 
+              (["+989197682386",
               "+989333229291",
-              "+989125138218")
-            ) {
+              "+989125138218"].indexOf(response.data[i].fields.requestid.phonenumber) == -1
+            )
+             {
               output.push(response.data[i]);
               if (response.data[i]) {
                 response.data[i].fields.requestid.phonenumber = undefined;
@@ -260,10 +260,9 @@ exports.getOpenedApplications = [
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
             if (
-              (!response.data[i].fields.requestid.phonenumber in
-                ["+989197682386"],
+              ["+989197682386",
               "+989333229291",
-              "+989125138218")
+              "+989125138218"].indexOf(response.data[i].fields.requestid.phonenumber) == -1
             ) {
               output.push(response.data[i]);
             }
