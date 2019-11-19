@@ -197,6 +197,7 @@ exports.getNewapplications = [
           for (i = 0; i <= response.data.length; i++) {
             if (
               response.data[i] &&
+              response.data[i].fields.requestid.phonenumber &&
               response.data[i].fields.requestid.phonenumber.toString() !=
                 "+989197682386" &&
               response.data[i].fields.requestid.phonenumber.toString() !=
@@ -266,6 +267,7 @@ exports.getOpenedApplications = [
           for (i = 0; i <= response.data.length; i++) {
             if (
               response.data[i] &&
+              response.data[i].fields.requestid.phonenumber &&
               response.data[i].fields.requestid.phonenumber.toString() !=
                 "+989197682386" &&
               response.data[i].fields.requestid.phonenumber.toString() !=
