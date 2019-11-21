@@ -80,7 +80,7 @@ exports.add = [
 exports.update = function(req, res, next) {
   broker
     .sendRPCMessage(
-      { spaceId: req.spaceid, userId: req.userId, body: req.body },
+      { spaceId: req.spaceId, userId: req.userId, body: req.body },
       "updatecontent"
     )
     .then(result => {
@@ -99,7 +99,7 @@ exports.update = function(req, res, next) {
 exports.remove = function(req, res, next) {
   broker
     .sendRPCMessage(
-      { spaceId: req.spaceid, userId: req.userId, body: req.body },
+      { spaceId: req.spaceId, userId: req.userId, body: req.body },
       "removecontent"
     )
     .then(result => {
