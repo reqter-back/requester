@@ -1,6 +1,6 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var productController = require('../controllers/productsController');
+var productController = require("../controllers/productsController");
 /**
  * @api {get} /products/api/v1/categories Get categories
  * @apiName GetCategories
@@ -40,5 +40,8 @@ HTTP/1.1 500 Internal server error
  }
 
  */
-router.get("/api/v1/all", productController.getproductslist);
+router.get("/all", productController.getproductslist);
+router.post("/add", productController.add);
+router.delete("/remove", productController.remove);
+router.put("/edit", productController.update);
 module.exports = router;

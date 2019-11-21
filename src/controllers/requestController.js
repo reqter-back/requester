@@ -191,24 +191,36 @@ exports.getNewapplications = [
     console.log(config);
     axios(config)
       .then(function(response) {
+        console.log(JSON.stringify(response.data));
         var output = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
             if (
-              (!response.data[i].fields.requestid.phonenumber in
-                ["+989197682386"],
-              "+989333229291",
-              "+989125138218")
+              response.data[i] &&
+              response.data[i].fields &&
+              response.data[i].fields.requestid &&
+              response.data[i].fields.requestid.fields.phonenumber &&
+              ((response.data[
+                i
+              ].fields.requestid.fields.phonenumber.toString() !=
+                "+989197682386" &&
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989333229291" &&
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989125138218") ||
+                response.data[i].fields.partnerid.fields.isdevacc)
             ) {
+              response.data[i].fields.requestid.fields.phonenumber = undefined;
+              response.data[i].fields.requestid.fields.fullname = undefined;
+              response.data[i].fields.requestid.fields.email = undefined;
+              response.data[i].fields.requestid.fields.resume = undefined;
+              response.data[i].fields.requestid.fields.avatar = undefined;
+              response.data[i].fields.partnerid = undefined;
               output.push(response.data[i]);
-              if (response.data[i]) {
-                response.data[i].fields.requestid.phonenumber = undefined;
-                response.data[i].fields.requestid.fullname = undefined;
-                response.data[i].fields.requestid.email = undefined;
-                response.data[i].fields.requestid.resume = undefined;
-                response.data[i].fields.requestid.avatar = undefined;
-                response.data[i].fields.partnerid = undefined;
-              }
             }
           }
         }
@@ -260,10 +272,23 @@ exports.getOpenedApplications = [
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
             if (
-              (!response.data[i].fields.requestid.phonenumber in
-                ["+989197682386"],
-              "+989333229291",
-              "+989125138218")
+              response.data[i] &&
+              response.data[i].fields &&
+              response.data[i].fields.requestid &&
+              response.data[i].fields.requestid.fields.phonenumber &&
+              ((response.data[
+                i
+              ].fields.requestid.fields.phonenumber.toString() !=
+                "+989197682386" &&
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989333229291" &&
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber.toString() !=
+                  "+989125138218") ||
+                response.data[i].fields.partnerid.fields.isdevacc)
             ) {
               output.push(response.data[i]);
             }
