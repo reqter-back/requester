@@ -199,28 +199,34 @@ exports.getNewapplications = [
               response.data[i] &&
               response.data[i].fields &&
               response.data[i].fields.requestid &&
-              response.data[i].fields.requestid.fields.phonenumber &&
-              ((response.data[
-                i
-              ].fields.requestid.fields.phonenumber.toString() !=
-                "+989197682386" &&
-                response.data[
-                  i
-                ].fields.requestid.fields.phonenumber.toString() !=
-                  "+989333229291" &&
-                response.data[
-                  i
-                ].fields.requestid.fields.phonenumber.toString() !=
-                  "+989125138218") ||
-                response.data[i].fields.partnerid.fields.isdevacc)
+              response.data[i].fields.partnerid &&
+              response.data[i].fields.partnerid.fields
             ) {
-              response.data[i].fields.requestid.fields.phonenumber = undefined;
-              response.data[i].fields.requestid.fields.fullname = undefined;
-              response.data[i].fields.requestid.fields.email = undefined;
-              response.data[i].fields.requestid.fields.resume = undefined;
-              response.data[i].fields.requestid.fields.avatar = undefined;
-              response.data[i].fields.partnerid = undefined;
-              output.push(response.data[i]);
+              var pn = response.data[i].fields.requestid.fields.phonenumber
+                ? response.data[i].fields.requestid.fields.phonenumber
+                : response.data[i].fields.requestid.fields.phoneNumber;
+              if (
+                pn &&
+                ([
+                  "+989197682386",
+                  "+989333229291",
+                  "+989125138218",
+                  "09197682386",
+                  "09333229291",
+                  "09125138218"
+                ].indexOf(pn) == -1 ||
+                  response.data[i].fields.partnerid.fields.isdevacc)
+              ) {
+                response.data[
+                  i
+                ].fields.requestid.fields.phonenumber = undefined;
+                response.data[i].fields.requestid.fields.fullname = undefined;
+                response.data[i].fields.requestid.fields.email = undefined;
+                response.data[i].fields.requestid.fields.resume = undefined;
+                response.data[i].fields.requestid.fields.avatar = undefined;
+                //response.data[i].fields.partnerid = undefined;
+                output.push(response.data[i]);
+              }
             }
           }
         }
@@ -275,22 +281,26 @@ exports.getOpenedApplications = [
               response.data[i] &&
               response.data[i].fields &&
               response.data[i].fields.requestid &&
-              response.data[i].fields.requestid.fields.phonenumber &&
-              ((response.data[
-                i
-              ].fields.requestid.fields.phonenumber.toString() !=
-                "+989197682386" &&
-                response.data[
-                  i
-                ].fields.requestid.fields.phonenumber.toString() !=
-                  "+989333229291" &&
-                response.data[
-                  i
-                ].fields.requestid.fields.phonenumber.toString() !=
-                  "+989125138218") ||
-                response.data[i].fields.partnerid.fields.isdevacc)
+              response.data[i].fields.partnerid &&
+              response.data[i].fields.partnerid.fields
             ) {
-              output.push(response.data[i]);
+              var pn = response.data[i].fields.requestid.fields.phonenumber
+                ? response.data[i].fields.requestid.fields.phonenumber
+                : response.data[i].fields.requestid.fields.phoneNumber;
+              if (
+                pn &&
+                ([
+                  "+989197682386",
+                  "+989333229291",
+                  "+989125138218",
+                  "09197682386",
+                  "09333229291",
+                  "09125138218"
+                ].indexOf(pn) == -1 ||
+                  response.data[i].fields.partnerid.fields.isdevacc)
+              ) {
+                output.push(response.data[i]);
+              }
             }
           }
         }
