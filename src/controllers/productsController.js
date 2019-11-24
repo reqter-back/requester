@@ -81,7 +81,7 @@ exports.update = function(req, res, next) {
   broker
     .sendRPCMessage(
       { spaceId: req.spaceId, userId: req.userId, body: req.body },
-      "updatecontent"
+      "partialupdatecontent"
     )
     .then(result => {
       var obj = JSON.parse(result.toString("utf8"));
