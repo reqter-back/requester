@@ -221,11 +221,14 @@ exports.getNewapplications = [
                 response.data[
                   i
                 ].fields.requestid.fields.phonenumber = undefined;
+                response.data[
+                  i
+                ].fields.requestid.fields.phoneNumber = undefined;
                 response.data[i].fields.requestid.fields.fullname = undefined;
                 response.data[i].fields.requestid.fields.email = undefined;
                 response.data[i].fields.requestid.fields.resume = undefined;
                 response.data[i].fields.requestid.fields.avatar = undefined;
-                //response.data[i].fields.partnerid = undefined;
+                response.data[i].fields.partnerid = undefined;
                 output.push(response.data[i]);
               }
             }
