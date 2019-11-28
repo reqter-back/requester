@@ -199,6 +199,7 @@ exports.getNewapplications = [
               response.data[i] &&
               response.data[i].fields &&
               response.data[i].fields.requestid &&
+              response.data[i].fields.requestid.fields &&
               response.data[i].fields.partnerid &&
               response.data[i].fields.partnerid.fields
             ) {
