@@ -117,7 +117,9 @@ exports.gettoken = [
           accessTokenExpiresOn:
             process.env.TEMP_TOKEN_EXPIRE_TIME || 365 * 24 * 60 * 60,
           clientId: app.clientId,
-          deviceToken: req.headers.devicetoken,
+          deviceToken: req.headers.devicetoken
+            ? req.headers.devicetoken
+            : req.headers.deviceToken,
           os: req.headers.os,
           version: req.headers.version
         });

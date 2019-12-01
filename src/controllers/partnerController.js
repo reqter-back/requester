@@ -107,7 +107,9 @@ exports.requestcode = [
         refreshToken: undefined,
         accessTokenExpiresOn: undefined,
         userId: req.body.phoneNumber,
-        deviceToken: req.headers.devicetoken,
+        deviceToken: req.headers.devicetoken
+          ? req.headers.devicetoken
+          : req.headers.deviceToken,
         os: req.headers.os,
         version: req.headers.version,
         role: "partner"
