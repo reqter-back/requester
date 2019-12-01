@@ -120,6 +120,7 @@ exports.requestcode = [
           : req.headers.deviceToken,
         os: req.headers.os,
         version: req.headers.version,
+        issueDate: new Date(),
         role: "customer"
       });
       accessToken.activation_code = getNewCode();
