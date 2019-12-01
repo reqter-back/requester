@@ -23,6 +23,6 @@ module.exports = mongoose.model(
     deviceToken: { type: String },
     os: { type: String },
     version: { type: String },
-    token: { type: String }
+    issueDate: { type: Date, default: new Date() }
   })
 );

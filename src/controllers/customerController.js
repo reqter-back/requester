@@ -5,6 +5,7 @@ const broker = require("./serviceBroker");
 const Tokens = require("../models/token");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
+const tokencreatedevent = require("../events/onNewTokenCreated");
 var wrapUser = function(user) {
   if (user) {
     user.password = undefined;
@@ -141,13 +142,14 @@ exports.requestcode = [
           saveResult.deviceToken ? saveResult.deviceToken : undefined,
           req.clientId
         );
+        tokencreatedevent.onNewTokenCreated().call(saveResult);
         if (process.env.NODE_ENV == "production")
           res.status(200).json({
             success: true,
             authenticated: false,
             message: "Code generated and sent to your phone"
           });
-        else
+        else {
           res.status(200).json({
             success: true,
             authenticated: false,
@@ -155,7 +157,7 @@ exports.requestcode = [
             activation_code: saveResult.activation_code,
             message: "Code generated and sent to your phone"
           });
-
+        }
         return saveResult;
       });
     }

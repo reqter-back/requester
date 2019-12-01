@@ -58,6 +58,7 @@ function verifyToken(req, res, next) {
         // if everything good, save to request for use in other routes
         console.log("auth : " + JSON.stringify(decoded));
         req.userId = tkn.userId;
+        req.access_token = token;
         Apps.findOne({ clientId: decoded.clientId }).exec((err, app) => {
           var result = {
             success: false,
