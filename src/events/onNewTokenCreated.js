@@ -1,4 +1,3 @@
-var broker = require("../rpcserver");
 function onNewTokenCreated() {
   var _onOkCallBack;
   function _onOk(result) {
@@ -9,7 +8,7 @@ function onNewTokenCreated() {
 
   function _call(token) {
     console.log("onnewtokencreated event triggered.");
-    broker.publish("requester", "onnewtokencreated", token);
+    //broker.publish("requester", "onnewtokencreated", token);
     _onOk(token);
   }
   return {

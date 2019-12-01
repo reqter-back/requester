@@ -5,7 +5,7 @@ const broker = require("./serviceBroker");
 const Tokens = require("../models/token");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
-const tokencreatedevent = require("../events/onNewTokenCreated");
+//const tokencreatedevent = require("../events/onNewTokenCreated");
 var wrapUser = function(user) {
   if (user) {
     user.password = undefined;
@@ -142,7 +142,7 @@ exports.requestcode = [
           saveResult.deviceToken ? saveResult.deviceToken : undefined,
           req.clientId
         );
-        tokencreatedevent.onNewTokenCreated().call(saveResult);
+        //tokencreatedevent.onNewTokenCreated().call(saveResult);
         if (process.env.NODE_ENV == "production")
           res.status(200).json({
             success: true,
