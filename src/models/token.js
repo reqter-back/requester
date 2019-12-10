@@ -3,13 +3,16 @@
  */
 
 var mongoose = require("mongoose");
+var sysfld = require("./sys");
+var ctype = require("./contentType");
+var status = require("./status");
+var connections = require("../db/connections");
 var Schema = mongoose.Schema;
-
 /**
  * Schema definitions.
  */
 
-module.exports = mongoose.model(
+module.exports = connections.authDb.model(
   "Tokens",
   new Schema({
     accessToken: { type: String },

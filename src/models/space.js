@@ -4,6 +4,7 @@
 
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+var connections = require("../db/connections");
 /**
  * Schema definitions.
  */
@@ -13,7 +14,8 @@ const space = new Schema({
   description: { type: String, max: 256 },
   image: { type: Object },
   type: { type: String },
-  owner: { type: Schema.Types.ObjectId, ref: "Systemuser", required: true },
+  notification_email: { type: String },
+  owner: { type: Schema.Types.ObjectId, ref: "AdminUsers", required: true },
   roles: [],
   locales: [],
   webhooks: []
@@ -30,4 +32,4 @@ space.methods.viewModel = function(cb) {
     notification_email: this.notification_email
   };
 };
-module.exports = mongoose.model("Space", space);
+module.exports = connections.authDb.model("Space", space);

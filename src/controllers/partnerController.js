@@ -3,6 +3,7 @@ const { sanitizeBody } = require("express-validator/filter");
 const culture = process.env.CULTURE | "fa-IR";
 const broker = require("./serviceBroker");
 const Tokens = require("../models/token");
+const Contents = require("../models/content");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 
@@ -320,6 +321,29 @@ exports.updateprofile = [
 ];
 
 exports.getinfo = [
+  body("phoneNumber", "Phone number is required")
+    .not()
+    .isEmpty()
+    .withMessage("Phone number is required")
+    .isNumeric()
+    .isLength({ min: 11, max: 14 })
+    .withMessage("Phone number is invalid")
+    .matches(/^(\+98|0)?9\d{9}$/)
+    .withMessage("Phone number is in invalid format"),
+  body("code", "Code is required")
+    .not()
+    .isEmpty()
+    .withMessage("Code is required")
+    .isNumeric()
+    .isLength({ min: 4, max: 4 })
+    .withMessage("Code is invalid"),
+  //Sanitize fields
+  sanitizeBody("code")
+    .trim()
+    .escape(),
+  sanitizeBody("phoneNumber")
+    .trim()
+    .escape(),
   (req, res, next) => {
     var errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -327,18 +351,6 @@ exports.getinfo = [
       res.status(400).json({ success: false, error: errors });
       return;
     } else {
-      broker.sendRPCMessage(req.query, "findbyphone").then(result => {
-        var obj = JSON.parse(result.toString("utf8"));
-        if (!obj.success) {
-          if (obj.error) return res.status(500).json(obj);
-          else {
-            obj.error = "Invalid phone number";
-            res.status(404).json(obj);
-          }
-        } else {
-          res.status(200).json(wrapUser(obj.data));
-        }
-      });
     }
   }
 ];
