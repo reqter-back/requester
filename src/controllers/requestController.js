@@ -23,10 +23,10 @@ exports.myRequests = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         res.send(response.data);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -73,7 +73,7 @@ exports.userRequests = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         var arr = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i < response.data.length; i++) {
@@ -82,7 +82,7 @@ exports.userRequests = [
         } else arr = response.data;
         res.send(arr);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -144,12 +144,12 @@ exports.getRequestsOffers = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         if (response.data && response.data.data && response.data.data.contents)
           res.send(response.data.data.contents);
         else res.send(response.data);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -190,7 +190,7 @@ exports.getNewapplications = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         console.log(JSON.stringify(response.data));
         var output = [];
         if (response.data && response.data.length > 0) {
@@ -214,6 +214,7 @@ exports.getNewapplications = [
                   "+989125138218",
                   "09197682386",
                   "09333229291",
+                  "09126221987",
                   "09125138218"
                 ].indexOf(pn) == -1 ||
                   response.data[i].fields.partnerid.fields.isdevacc)
@@ -236,7 +237,7 @@ exports.getNewapplications = [
         }
         res.send(output);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -277,7 +278,7 @@ exports.getOpenedApplications = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         var output = [];
         if (response.data && response.data.length > 0) {
           for (i = 0; i <= response.data.length; i++) {
@@ -298,6 +299,7 @@ exports.getOpenedApplications = [
                   "+989333229291",
                   "+989125138218",
                   "09197682386",
+                  "09126221987",
                   "09333229291",
                   "09125138218"
                 ].indexOf(pn) == -1 ||
@@ -310,7 +312,7 @@ exports.getOpenedApplications = [
         }
         res.send(output);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -371,12 +373,12 @@ exports.openApplication = [
           };
           console.log(config);
           axios(config)
-            .then(function(response) {
+            .then(function (response) {
               if (response.data && response.data.length > 0)
                 res.send(response.data[0]);
               else res.status(204).send();
             })
-            .catch(function(error) {
+            .catch(function (error) {
               if (error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
