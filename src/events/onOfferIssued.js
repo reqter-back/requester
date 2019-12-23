@@ -1,5 +1,5 @@
 const broker = require('../controllers/serviceBroker')
-function onNewTokenCreated() {
+function onOfferIssued() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -8,8 +8,8 @@ function onNewTokenCreated() {
   }
 
   function _call(token) {
-    console.log("onnewtokencreated event triggered.");
-    //broker.publish("requester", "onnewtokencreated", token);
+    console.log("onOfferIssued event triggered.");
+    broker.publish("requester", "onofferissued", token);
     _onOk(token);
   }
   return {
@@ -21,4 +21,4 @@ function onNewTokenCreated() {
   };
 }
 
-exports.onNewTokenCreated = onNewTokenCreated;
+exports.onOfferIssued = onOfferIssued;

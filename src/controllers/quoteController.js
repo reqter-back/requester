@@ -2,6 +2,10 @@ var axios = require("axios");
 var express = require("express");
 var router = express.Router();
 var controller = require("../controllers/requestController");
+const customerAccept = require('../events/onCustomerAcceptedAnOffer');
+const customerReject = require('../events/onCustomerRejectedAnOffer');
+const offerIssued = require('../events/onOfferIssued');
+const offerCanceled = require('../events/onOfferCanceled');
 var broker = require("../controllers/serviceBroker");
 
 exports.customerAccpet = [
@@ -20,6 +24,7 @@ exports.customerAccpet = [
             res.status(404).json(obj);
           }
         } else {
+          customerAccept.onCustomerAcceptedAnOffer.call(obj);
           res.status(200).json(obj.data);
         }
       });
@@ -42,6 +47,7 @@ exports.customerReject = [
             res.status(404).json(obj);
           }
         } else {
+          customerReject.onCustomerRejectedAnOffer.call(obj);
           res.status(200).json(obj.data);
         }
       });
@@ -69,12 +75,12 @@ exports.wonoffers = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         if (response.data && response.data.data && response.data.data.contents)
           res.send(response.data.data.contents);
         else res.send(response.data);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -120,10 +126,10 @@ exports.acceptedoffers = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         res.send(response.data);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -169,10 +175,10 @@ exports.myoffers = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         res.send(response.data);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -218,10 +224,10 @@ exports.lostoffers = [
     };
     console.log(config);
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         res.send(response.data);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -259,6 +265,7 @@ exports.issueOffer = [
             return res.status(500).json(obj);
           }
         } else {
+          offerIssued.onOfferIssued.call(obj);
           res.status(201).json(obj.data);
         }
       });
@@ -303,6 +310,7 @@ exports.cancel = [
             res.status(404).json(obj);
           }
         } else {
+          offerCanceled.onOfferCanceled.call(obj);
           res.status(200).json(obj.data);
         }
       });

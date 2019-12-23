@@ -7,19 +7,19 @@ var rabbitHost = process.env.RABBITMQ_HOST || "amqp://gvgeetrh:6SyWQAxDCpcdg1S0D
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
 
 var amqpConn = null;
-function startconnect(){
+function startconnect() {
   console.log('Start connecting');
-  amqp.connect(rabbitHost, (err, conn)=>{
+  amqp.connect(rabbitHost, (err, conn) => {
     if (err) {
       console.error("[AMQP]", err.message);
       return setTimeout(startconnect, 1000);
     }
-    conn.on("error", function(err) {
+    conn.on("error", function (err) {
       if (err.message !== "Connection closing") {
         console.error("[AMQP] conn error", err.message);
       }
     });
-    conn.on("close", function() {
+    conn.on("close", function () {
       console.error("[AMQP] reconnecting");
       //return setTimeout(start, 1000);
     });
@@ -30,35 +30,46 @@ function startconnect(){
     whenConnected();
   });
 }
-exports.start = ()=> {
+exports.start = () => {
   startconnect();
 }
 
 function whenConnected() {
-  amqpConn.createChannel( (err, ch) => {
-      if (err) {
-          console.error("[AMQP]", err.message);
-          //return setTimeout(this.startconnect, 1000);
-          }
-          ch.on("error", function(err) {
-          console.error("[AMQP] channel error", err.message);
-          //return setTimeout(this.startconnect, 1000);
-          });
-          ch.on("close", function() {
-          console.log("[AMQP] channel closed");
-          //return setTimeout(this.startconnect, 1000);
-          });
-          // create an event emitter where rpc responses will be published by correlationId
-          ch.responseEmitter = new EventEmitter();
-          ch.responseEmitter.setMaxListeners(0);
-          ch.consume(REPLY_QUEUE,
-              (msg) => ch.responseEmitter.emit(msg.properties.correlationId, msg.content),
-              {noAck: true});
-          channel = ch;
-          return ch;
-      });
+  amqpConn.createChannel((err, ch) => {
+    if (err) {
+      console.error("[AMQP]", err.message);
+      //return setTimeout(this.startconnect, 1000);
+    }
+    ch.on("error", function (err) {
+      console.error("[AMQP] channel error", err.message);
+      //return setTimeout(this.startconnect, 1000);
+    });
+    ch.on("close", function () {
+      console.log("[AMQP] channel closed");
+      //return setTimeout(this.startconnect, 1000);
+    });
+    // create an event emitter where rpc responses will be published by correlationId
+    ch.responseEmitter = new EventEmitter();
+    ch.responseEmitter.setMaxListeners(0);
+    ch.consume(REPLY_QUEUE,
+      (msg) => ch.responseEmitter.emit(msg.properties.correlationId, msg.content),
+      { noAck: true });
+    channel = ch;
+
+    //Exchanges
+    var exchange = 'requester';
+
+    channel.assertExchange(exchange, 'direct', {
+      durable: false
+    });
+
+    channel.assertExchange("contentservice", 'direct', {
+      durable: false
+    });
+    return ch;
+  });
 }
- var channel = undefined;
+var channel = undefined;
 
 exports.sendRPCMessage = (message, rpcQueue) => new Promise((resolve) => {
   const correlationId = uuidv4();
@@ -66,3 +77,9 @@ exports.sendRPCMessage = (message, rpcQueue) => new Promise((resolve) => {
   channel.responseEmitter.once(correlationId, resolve);
   channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)), { correlationId, replyTo: REPLY_QUEUE })
 });
+
+exports.publish = function (exchange, queue, message) {
+  console.log(message);
+  channel.publish(exchange, queue, Buffer.from(JSON.stringify({ body: message })));
+  console.log('publishing message to : ' + exchange + " : " + queue);
+}
