@@ -17,6 +17,7 @@ exports.customerAccpet = [
         "partialupdatecontent"
       )
       .then(result => {
+        console.log("Customer accepted an offer : applied")
         var obj = JSON.parse(result.toString("utf8"));
         if (!obj.success) {
           if (obj.error) return res.status(500).json(obj);
@@ -24,7 +25,9 @@ exports.customerAccpet = [
             res.status(404).json(obj);
           }
         } else {
-          customerAccept.onCustomerAcceptedAnOffer.call(obj);
+          console.log(JSON.stringify(obj));
+          console.log("Publishing accpeted event")
+          customerAccept.onCustomerAcceptedAnOffer().call(obj);
           res.status(200).json(obj.data);
         }
       });
@@ -47,7 +50,7 @@ exports.customerReject = [
             res.status(404).json(obj);
           }
         } else {
-          customerReject.onCustomerRejectedAnOffer.call(obj);
+          customerReject.onCustomerRejectedAnOffer().call(obj);
           res.status(200).json(obj.data);
         }
       });
@@ -265,7 +268,7 @@ exports.issueOffer = [
             return res.status(500).json(obj);
           }
         } else {
-          offerIssued.onOfferIssued.call(obj);
+          offerIssued.onOfferIssued().call(obj);
           res.status(201).json(obj.data);
         }
       });
@@ -310,7 +313,7 @@ exports.cancel = [
             res.status(404).json(obj);
           }
         } else {
-          offerCanceled.onOfferCanceled.call(obj);
+          offerCanceled.onOfferCanceled().call(obj);
           res.status(200).json(obj.data);
         }
       });

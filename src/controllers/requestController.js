@@ -115,6 +115,7 @@ exports.submit = [
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
+        console.log(JSON.stringify(obj));
         if (!obj.success) {
           if (obj.error) {
             return res.status(500).json(obj);
@@ -176,6 +177,9 @@ exports.getRequestsOffers = [
 
 exports.getNewapplications = [
   (req, res, next) => {
+    if (req.query && !req.query.limit) {
+      req.query.limit = 500;
+    }
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
     var config = {
@@ -347,6 +351,7 @@ exports.openApplication = [
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
+        console.log(JSON.stringify(obj));
         if (!obj.success) {
           if (obj.error) return res.status(500).json(obj);
           else {
@@ -438,6 +443,7 @@ exports.rejectApplication = [
       )
       .then(result => {
         var obj = JSON.parse(result.toString("utf8"));
+        console.log(JSON.stringify(obj));
         if (!obj.success) {
           if (obj.error) return res.status(500).json(obj);
           else {

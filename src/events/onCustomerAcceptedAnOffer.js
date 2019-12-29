@@ -8,7 +8,7 @@ function onCustomerAcceptedAnOffer() {
   }
 
   function _call(offer) {
-    console.log("onCustomerAcceptedAnOffer event triggered.");
+    console.log("onCustomerAcceptedAnOffer event triggered." + offer);
     broker.publish("requester", "oncustomeracceptedanoffer", offer);
     _onOk(offer);
   }
