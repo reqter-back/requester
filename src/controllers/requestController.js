@@ -7,6 +7,7 @@ exports.myRequests = [
     if (q) {
       q["sys.issuer"] = req.userId;
       q["sys.spaceId"] = req.spaceId.toString();
+      q["sort"] = "-sys.lastUpdateTime";
     }
     console.log(q);
     var apiRoot =
@@ -57,6 +58,7 @@ exports.userRequests = [
     if (q) {
       q["sys.issuer"] = req.userId;
       q["sys.spaceId"] = req.spaceId.toString();
+      q["sort"] = "-sys.lastUpdateTime";
     }
     console.log(q);
     var apiRoot =
@@ -130,6 +132,10 @@ exports.submit = [
 
 exports.getRequestsOffers = [
   (req, res, next) => {
+    if (req.query && !req.query.limit) {
+      req.query.limit = 500;
+      req.query.sort = "-sys.lastUpdateTime"
+    }
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
     req.query["status"] = "published";
@@ -268,6 +274,10 @@ exports.getNewapplications = [
 
 exports.getOpenedApplications = [
   (req, res, next) => {
+    if (req.query && !req.query.limit) {
+      req.query.limit = 500;
+      req.query.sort = "-sys.lastUpdateTime"
+    }
     var apiRoot =
       process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
     var config = {

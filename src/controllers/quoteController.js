@@ -60,7 +60,7 @@ exports.customerReject = [
 exports.wonoffers = [
   (req, res, next) => {
     var apiRoot =
-      process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
+      process.env.CONTENT_DELIVERY_API || "https://cda.reqter.com";
     var config = {
       url: "/graphql",
       baseURL: apiRoot,
@@ -116,7 +116,7 @@ exports.acceptedoffers = [
     }
     console.log(q);
     var apiRoot =
-      process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
+      process.env.CONTENT_DELIVERY_API || "https://cda.reqter.com";
     var config = {
       url: "/contents/search",
       baseURL: apiRoot,
@@ -165,7 +165,7 @@ exports.myoffers = [
     // }
     console.log(q);
     var apiRoot =
-      process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
+      process.env.CONTENT_DELIVERY_API || "https://cda.reqter.com";
     var config = {
       url: "/contents/search",
       baseURL: apiRoot,
@@ -214,7 +214,7 @@ exports.lostoffers = [
     }
     console.log(q);
     var apiRoot =
-      process.env.CONTENT_DELIVERY_API || "https://app-dpanel.herokuapp.com";
+      process.env.CONTENT_DELIVERY_API || "https://cda.reqter.com";
     var config = {
       url: "/contents/search",
       baseURL: apiRoot,
