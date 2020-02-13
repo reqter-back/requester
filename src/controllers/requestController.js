@@ -1,6 +1,7 @@
 var axios = require("axios");
 const async = require("async");
 const broker = require("./serviceBroker");
+const partnerreject = require('../events/onPartnerRejectedAnApp')
 exports.myRequests = [
   (req, res, next) => {
     var q = req.query || {};
@@ -240,7 +241,8 @@ exports.getNewapplications = [
                 response.data[i].fields.requestid.fields.resume = undefined;
                 response.data[i].fields.requestid.fields.avatar = undefined;
                 response.data[i].fields.partnerid = undefined;
-                output.push(response.data[i]);
+                if (response.data[i].fields.requestid.status === "published")
+                  output.push(response.data[i]);
               }
             }
           }
@@ -319,7 +321,8 @@ exports.getOpenedApplications = [
                 ].indexOf(pn) == -1 ||
                   response.data[i].fields.partnerid.fields.isdevacc)
               ) {
-                output.push(response.data[i]);
+                if (response.data[i].fields.requestid.status === "published")
+                  output.push(response.data[i]);
               }
             }
           }
@@ -460,6 +463,7 @@ exports.rejectApplication = [
             res.status(404).json(obj);
           }
         } else {
+          partnerreject.onPartnerRejectedAnApp().call(obj.data);
           res.status(200).json(obj.data);
         }
       });
