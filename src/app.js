@@ -6,8 +6,12 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var helmet = require("helmet");
 var compression = require("compression");
+let apiLogger = require("./middlewares/apiLogger");
 
 var app = express();
+
+// Overwrite res.send
+app.use(apiLogger);
 
 app.use(compression()); //Compress all routes
 app.use(helmet());
